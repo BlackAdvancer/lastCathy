@@ -849,9 +849,9 @@ public class Manager extends controller{
 
 
     }
-      private void getTotalTransactionAmount() throws SQLException, IOException {
-         Double totalPrice;
-         int count;
+    private void getTotalTransactionAmount() throws SQLException, IOException {
+        Double totalPrice;
+        int count;
          int inputYear;
          int inputMonth;
          int inputDay;
@@ -864,19 +864,23 @@ public class Manager extends controller{
          System.out.print("\nEnter starting day:");
          inputDay = Integer.parseInt(in.readLine());
          java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
-         ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(totalPrice) AS CON FROM Purchase WHERE purchaseTime >= ? AND branchNumber = ?");
+         ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime <= ? AND branchNumber = ?");
+         //ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime >= '2015-01-01 0:0:0' AND branchNumber = 05");
          ps.setTimestamp(1, startDate);
          ps.setInt(2, branch);
+         System.out.println("Gay1");
          rs = ps.executeQuery();
          ResultSetMetaData rsmd = rs.getMetaData();
-          int numCols = rsmd.getColumnCount();
+         int numCols = rsmd.getColumnCount();
          for (int i = 0; i < numCols; i++)
                {
                   // get column name and print it
                   System.out.printf("%-15s", rsmd.getColumnName(i+1));
+                  System.out.println("Gay2");
                }
          System.out.println(" ");
           while (rs.next()) {
+            System.out.println("Gay3");
            totalPrice = rs.getDouble("SUM");
             System.out.printf("%-10s", totalPrice);
            count = rs.getInt("CON");
@@ -917,6 +921,4 @@ public class Manager extends controller{
       // the ResultSet will also be closed
       stmt.close();
   }
-
-
 }
