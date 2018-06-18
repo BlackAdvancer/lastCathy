@@ -7,14 +7,18 @@ import java.awt.event.ActionListener;
 class LoginUI extends JFrame {
 
     private String character;
+    Employee employee;
     Object object;
     private final int WIDTH = 200, HEIGHT = 90;
-    public LoginUI(Object object, String character) {
+    public LoginUI(Object object, String character, Employee employee) {
+        System.out.println("MFBUG5");
         this.character = character;
         this.object = object;
         setSize(WIDTH, HEIGHT);
         setTitle("Log In");
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.employee = employee;
         draw();
     }
 
@@ -33,6 +37,7 @@ class LoginUI extends JFrame {
         quit = new JButton("to main menu");
         quit.addActionListener(new buttonHandler());
         add(quit, BorderLayout.SOUTH);
+
     }
 
     private class buttonHandler implements ActionListener {
@@ -41,31 +46,22 @@ class LoginUI extends JFrame {
             Object source = e.getSource();
             if (source == logIn) {
                 int id = Integer.parseInt(id_field.getText());
-                // todo if successful
                 if (character.equals("Employee")) {
                     EmployeeUI ui = (EmployeeUI) object;
-                    if (false) { // todo
-                        NotificationUI invalidID = new NotificationUI("Invalid ID");
-                        invalidID.setVisible(true);
+//                    !ui.employee.validateID(id)
+                    if (!employee.validateID(id)) {
+                        NotificationUI notificationUI = new NotificationUI("invalid id");
+                        notificationUI.setVisible(true);
                     } else {
                         ui.employeeID = id;
+                        System.out.println(ui.employee.id);
                         ui.repaint();
                         ui.setVisible(true);
                         setVisible(false);
                         dispose();
                     }
                 } else if (character.equals("Manager")) {
-                    ManagerUI ui = (ManagerUI) object;
-                    if (false) { // todo
-                        NotificationUI invalidID = new NotificationUI("Invalid ID");
-                        invalidID.setVisible(true);
-                    } else {
-                        ui.managerID = id;
-                        ui.repaint();
-                        ui.setVisible(true);
-                        setVisible(false);
-                        dispose();
-                    }
+                    // todo
                 }
             } else if (source == quit) {
                 BranchUI branchUI = new BranchUI();

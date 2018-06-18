@@ -5,13 +5,14 @@ import java.awt.event.ActionListener;
 
 @SuppressWarnings("Serial")
 public class AddMembership extends JFrame {
-
+    Employee employee;
     private final int WIDTH = 300, HEIGHT = 100;
-    public AddMembership() {
+    public AddMembership(Employee employee) {
         this.setSize(WIDTH, HEIGHT);
         this.setTitle("Task: Add Membership");
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.employee = employee;
         this.draw();
     }
 
@@ -57,7 +58,8 @@ public class AddMembership extends JFrame {
                     if (Constraints.ifNameFormattingWrong(name)) throw new FormattingException("Wrong Name Format");
                     if (Constraints.ifPhoneFormatWrong(phoneNumber)) throw new FormattingException("Wrong Phone Number Format");
                     // todo if membership is valid
-                    int membershipID = 111;
+
+                    int membershipID =  employee.manageMemberShip(name, phoneNumber);;
                     // todo add membership
                     NotificationUI ui = new NotificationUI("Member "+ta_name.getText()+" is added!",
                             "Membership# is "+membershipID, "Congratulations");

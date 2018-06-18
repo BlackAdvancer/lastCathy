@@ -8,7 +8,7 @@ class EmployeeUI extends JFrame {
 
     private final int WIDTH = 400, HEIGHT = 90;
     int employeeID;
-//    Employee employee;
+    public Employee employee;
     EmployeeUI() {
         setSize(WIDTH, HEIGHT);
         setTitle("Work Panel");
@@ -16,9 +16,9 @@ class EmployeeUI extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         draw();
-        LoginUI loginUI = new LoginUI(this, "Employee");
+         this.employee = new Employee();
+        LoginUI loginUI = new LoginUI(this, "Employee", employee);
         loginUI.setVisible(true);
-        loginUI.setResizable(false);
     }
 
 //    EmployeeUI(Employee employee) {
@@ -57,6 +57,27 @@ class EmployeeUI extends JFrame {
         logOut.addActionListener(handler);
         northPanel.add(logOut);
     }
+    private void logOut() {
+
+        LoginUI loginUI = new LoginUI(this, "Employee", employee);
+        loginUI.setVisible(true);
+        setVisible(false);
+    }
+    private ProcessPurchase purchase;
+    private AddMembership addMem;
+
+
+    private void processPurchase() {
+        System.out.println(employee.id);
+        purchase = new ProcessPurchase(employee);
+        purchase.setVisible(true);
+    }
+
+    private void addMembership() {
+        addMem = new AddMembership(employee);
+        addMem.setVisible(true);
+    }
+
 
     JButton processPurchase, addMembership;
     private void drawButtonsPanel() {
@@ -69,8 +90,7 @@ class EmployeeUI extends JFrame {
         buttonsPanel.add(addMembership);
     }
 
-    private ProcessPurchase purchase;
-    private AddMembership addMem;
+
     private class buttonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -78,9 +98,9 @@ class EmployeeUI extends JFrame {
             if (source == logOut)
                 logOut();
             else if (source == processPurchase) {
-                if (purchase == null)
+                if (purchase == null) {
                     processPurchase();
-                else {
+                }else {
                     purchase.setVisible(false);
                     purchase.dispose();
                     purchase = null;
@@ -97,20 +117,5 @@ class EmployeeUI extends JFrame {
         }
     }
 
-    private void logOut() {
-        LoginUI loginUI = new LoginUI(this, "Employee");
-        loginUI.setVisible(true);
-        setVisible(false);
-    }
-
-    private void processPurchase() {
-        purchase = new ProcessPurchase();
-        purchase.setVisible(true);
-    }
-
-    private void addMembership() {
-        addMem = new AddMembership();
-        addMem.setVisible(true);
-    }
 
 }

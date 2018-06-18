@@ -33,7 +33,7 @@ class BranchUI extends JFrame{
         north.setLayout(new BorderLayout());
         friendly = new JLabel("Tell us about you...");
         try {
-            Image image = ImageIO.read(new File("logo.jpeg"));
+            Image image = ImageIO.read(new File("UI/logo.jpeg"));
             image = image.getScaledInstance(50, 50, Image.SCALE_DEFAULT);
             logo = new JLabel(new ImageIcon(image));
             north.add(logo, BorderLayout.WEST);
@@ -74,14 +74,14 @@ class BranchUI extends JFrame{
                 CustomerUI customerUI = new CustomerUI();
                 customerUI.setVisible(true);
             } else if (source == employee) {
-//                System.out.print("hi employee");
+                System.out.print("hi employee");
 //                EmployeeUI employeeUI = new EmployeeUI(new Employee());
-                EmployeeUI employeeUI = new EmployeeUI();
+                  EmployeeUI employeeUI = new EmployeeUI();
 //                employeeUI.setVisible(true);
             } else if (source == manager) {
 //                System.out.print("hi manager");
                 ManagerUI managerUI = new ManagerUI();
-//                managerUI.setVisible(true);
+                managerUI.setVisible(true);
             }
             setVisible(false);
             dispose();

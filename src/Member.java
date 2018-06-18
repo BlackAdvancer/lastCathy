@@ -1,12 +1,10 @@
-import java.sql.*;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 // for reading from the command line
-import java.io.*;
-
 // for the login window
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 
 public class Member extends controller {

@@ -13,8 +13,6 @@ import java.awt.event.*;
 
 public class controller implements ActionListener {
     // command line reader
-    protected BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
     protected Connection con;
 
     // user is allowed 3 login attempts
@@ -30,6 +28,17 @@ public class controller implements ActionListener {
      * constructs login window and loads JDBC driver
      */
     public controller() {
+
+        try {
+            // Load the Oracle JDBC driver
+            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+            // may be oracle.jdbc.driver.OracleDriver as of Oracle 11g
+        } catch (SQLException ex) {
+            System.out.println("Message: " + ex.getMessage());
+            System.exit(-1);
+        }
+    }
+    public void draw(){
         mainFrame = new JFrame("User Login");
 
         JLabel usernameLabel = new JLabel("Enter username: ");
@@ -108,17 +117,7 @@ public class controller implements ActionListener {
 
         // place the cursor in the text field for the username
         usernameField.requestFocus();
-
-        try {
-            // Load the Oracle JDBC driver
-            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            // may be oracle.jdbc.driver.OracleDriver as of Oracle 11g
-        } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
-            System.exit(-1);
-        }
     }
-
     /*
      * connects to Oracle database named ug using user supplied username and password
      */
@@ -161,76 +160,20 @@ public class controller implements ActionListener {
         }
 
     }
-    private void showMenu()
-    {
+    private void showMenu() {
         //System.out.println(con == null);
-        int choice;
-        boolean quit;
-
-        quit = false;
-
-        try
-        {
+        try {
             // disable auto commit mode
             con.setAutoCommit(false);
-
-            while (!quit)
-            {
-                System.out.print("\n\nPlease choose one of the following: \n");
-                System.out.print("1.  Manager\n");
-                System.out.print("2.  Employee\n");
-                System.out.print("3.  Member\n");
-                System.out.print("4.  Quit\n");
-
-                choice = Integer.parseInt(in.readLine());
-
-                System.out.println(" ");
-
-                switch(choice)
-                {
-                    case 1:
-                        Manager m = new Manager();
-                        m.validateID();
-                        break;
-                    case 2:
-                        Employee e = new Employee();
-                        e.validateID();
-                        break;
-                    case 3:
-                        Member mem = new Member();
-                        mem.memberShowMenu();
-                        break;
-                    case 4:  quit = true;
-                }
-            }
-
-            con.close();
-            in.close();
-            System.out.println("\nGood Bye!\n\n");
-            System.exit(0);
-        }
-        catch (IOException e)
-        {
-            System.out.println("IOException!");
-
-            try
-            {
-                con.close();
-                System.exit(-1);
-            }
-            catch (SQLException ex)
-            {
-                System.out.println("Message: " + ex.getMessage());
-            }
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             System.out.println("Message: " + ex.getMessage());
         }
+        BranchUI branchUI = new BranchUI();
+        branchUI.setVisible(true);
     }
-
     public static void main (String args[])
     {
         controller c = new controller();
+        c.draw();
     }
 }
