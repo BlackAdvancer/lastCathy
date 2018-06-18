@@ -71,43 +71,49 @@ public class Manager extends controller{
         boolean quit = false;
 
         while (!quit) {
-            System.out.print("\n");
-            System.out.print("1.  Show all employees\n");
-            System.out.print("2.  Manage employee\n");
-            System.out.print("3.  Manage item\n");
-            System.out.print("4.  Manage membership\n");
-            System.out.print("5.  Manage deal\n");
-            System.out.print("6.  Generate report\n");
-            System.out.print("7.  Quit\n>> ");
+          System.out.print("\n");
+          System.out.print("1.  Show all employees\n");
+          System.out.print("2.  Manage employee\n");
+          System.out.print("3.  Manage item\n");
+          System.out.print("4.  Manage membership\n");
+          System.out.print("5.  Manage deal\n");
+          System.out.print("6.  Generate report for certain period\n");
+          System.out.print("7.  Get transaction since...\n");
+          System.out.print("8.  Get Minimum wage for each branch\n");
+          System.out.print("9.  Quit\n>> ");
 
+          choice = Integer.parseInt(in.readLine());
+          System.out.println(" ");
+          switch (choice) {
+              case 1:
+                  showAllEmployees();
+                  break;
+              case 2:
+                  manageEmployeeWage();
+                  break;
+              case 3:
+                  manageItem();
+                  break;
+              case 4:
+                  manageMembership();
+                  break;
+              case 5:
+                  manageDeal();
+                  break;
+              case 6:
+                  getSalesRecord();
+                  break;
+              case 7:
+                  getTotalTransactionAmount();
+                  break;
+              case 8:
+                  getMinWageFromAllBranches();
+                  break;
+              case 9:
+                  quit = true;
+          }
+      }
 
-            choice = Integer.parseInt(in.readLine());
-
-            System.out.println(" ");
-
-            switch (choice) {
-                case 1:
-                    showAllEmployees();
-                    break;
-                case 2:
-                    manageEmployeeWage();
-                    break;
-                case 3:
-                    manageItem();
-                    break;
-                case 4:
-                    manageMembership();
-                    break;
-                case 5:
-                    manageDeal();
-                    break;
-                case 6:
-                    getSalesRecord();
-                    break;
-                case 7:
-                    quit = true;
-            }
-        }
     }
 
     private void manageEmployeeWage() throws IOException, SQLException{
@@ -843,5 +849,74 @@ public class Manager extends controller{
 
 
     }
+      private void getTotalTransactionAmount() throws SQLException, IOException {
+         Double totalPrice;
+         int count;
+         int inputYear;
+         int inputMonth;
+         int inputDay;
+         PreparedStatement ps;
+         ResultSet rs;
+         System.out.print("\nEnter starting year: ");
+         inputYear = Integer.parseInt(in.readLine());
+         System.out.print("\nEnter starting month: ");
+         inputMonth= Integer.parseInt(in.readLine());
+         System.out.print("\nEnter starting day:");
+         inputDay = Integer.parseInt(in.readLine());
+         java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
+         ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(totalPrice) AS CON FROM Purchase WHERE purchaseTime >= ? AND branchNumber = ?");
+         ps.setTimestamp(1, startDate);
+         ps.setInt(2, branch);
+         rs = ps.executeQuery();
+         ResultSetMetaData rsmd = rs.getMetaData();
+          int numCols = rsmd.getColumnCount();
+         for (int i = 0; i < numCols; i++)
+               {
+                  // get column name and print it
+                  System.out.printf("%-15s", rsmd.getColumnName(i+1));
+               }
+         System.out.println(" ");
+          while (rs.next()) {
+           totalPrice = rs.getDouble("SUM");
+            System.out.printf("%-10s", totalPrice);
+           count = rs.getInt("CON");
+            System.out.printf("%-5s", count);
+          }
+          ps.close();
+  }
+  private void getMinWageFromAllBranches() throws SQLException {
+   int wage;
+   int branch;
+    int clerkID;
+   Statement stmt;
+   ResultSet rs;
+   stmt = con.createStatement();
+    rs   = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+   ResultSetMetaData rsmd = rs.getMetaData();
+          // get number of columns
+    int numCols = rsmd.getColumnCount();
+    System.out.println(" ");
+          // display column names;
+    for (int i = 0; i < numCols; i++)
+    {
+        // get column name and print it
+        System.out.printf("%-15s", rsmd.getColumnName(i+1));
+    }
+        System.out.println(" ");
+    while(rs.next())
+    {
+              // simplified output formatting; truncation may occur
+          wage= rs.getInt("MIN(wage)");
+          System.out.printf("%-5s", wage);
+          clerkID = rs.getInt("clerkID");
+          System.out.printf("%-5s", clerkID);
+          branch = rs.getInt("branchNumber");
+          System.out.printf("%-5s\n", branch);
+      }
+      // close the statement;
+      // the ResultSet will also be closed
+      stmt.close();
+  }
+
 
 }
