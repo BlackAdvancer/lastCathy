@@ -372,7 +372,44 @@ public class Manager extends controller{
     }
 
     private void manageMembership(){
-        // TODO:
+        try{
+          String name;
+          String phone;
+          PreparedStatement ps;
+          ResultSet rs;
+          int id = 0;
+          int point;
+          boolean current = false;
+          Random r = new Random();
+
+          while(!current) {
+              id = r.nextInt(1000);
+              ps = con.prepareStatement("SELECT * FROM MemberShip WHERE memberID = ?");
+              ps.setInt(1, id);
+              rs = ps.executeQuery();
+              if(!rs.next())
+                  current = true;
+              ps.close();
+          }
+
+          ps = con.prepareStatement("INSERT INTO MemberShip VALUES (?,?,?,0)");
+          ps.setInt(1,id);
+          System.out.print("\nplease Enter Member name : \n");
+          name = in.readLine();
+          ps.setString(2,name);
+          System.out.print("\nplease Enter Member phone number : \n");
+          phone = in.readLine();
+          ps.setString(3,phone);
+          ps.executeUpdate();
+
+          con.commit();
+          ps.close();
+        } catch (IOException e){
+          System.out.println("IOException!");
+        } catch (SQLException se) {
+          System.out.println("SQLException!");
+        }
+
     }
     private void manageDeal(){
         int     choice;
