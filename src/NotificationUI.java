@@ -1,5 +1,3 @@
-package UI;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +9,7 @@ public class NotificationUI extends JFrame {
     private final int WIDTH = 500, HEIGHT = 100;
     public NotificationUI(String message1) {
         this.message1 = message1;
+        message2 = "";
         setSize(WIDTH, HEIGHT);
         setTitle("Error");
         setResizable(false);

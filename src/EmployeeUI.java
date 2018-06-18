@@ -1,5 +1,3 @@
-package UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,6 +8,7 @@ class EmployeeUI extends JFrame {
 
     private final int WIDTH = 400, HEIGHT = 90;
     int employeeID;
+//    Employee employee;
     EmployeeUI() {
         setSize(WIDTH, HEIGHT);
         setTitle("Work Panel");
@@ -21,6 +20,11 @@ class EmployeeUI extends JFrame {
         loginUI.setVisible(true);
         loginUI.setResizable(false);
     }
+
+//    EmployeeUI(Employee employee) {
+//        this();
+//        this.employee = employee;
+//    }
 
     private JPanel buttonsPanel, northPanel;
     private buttonHandler handler;

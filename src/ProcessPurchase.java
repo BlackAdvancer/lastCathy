@@ -1,5 +1,3 @@
-package UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,7 +6,7 @@ import java.awt.event.ActionListener;
 @SuppressWarnings("Serial")
 public class ProcessPurchase extends JFrame {
 
-    private final int WIDTH = 400, HEIGHT = 700;
+    private final int WIDTH = 500, HEIGHT = 700;
     public ProcessPurchase() {
         this.setSize(WIDTH, HEIGHT);
         this.setTitle("Task: Process Purchase");
@@ -29,26 +27,32 @@ public class ProcessPurchase extends JFrame {
         add(tablePanel, BorderLayout.CENTER);
     }
 
-    private JButton add, delete, deleteLast;
+    private JButton add, delete, deleteLast, process;
+    private JLabel label;
     private JTextField textField;
     private void drawProcessPanel() {
         processPanel = new JPanel();
         processPanel.setLayout(new BorderLayout());
         textField = new JTextField();
         processPanel.add(textField, BorderLayout.CENTER);
+        label = new JLabel("ItemID");
+        processPanel.add(label, BorderLayout.WEST);
 
         add = new JButton("Add");
         add.addActionListener(handler);
         delete = new JButton("Delete");
         delete.addActionListener(handler);
-        deleteLast = new JButton("Delete Last Item");
+        deleteLast = new JButton("Delete Last");
         deleteLast.addActionListener(handler);
+        process = new JButton("Process");
+        process.addActionListener(handler);
 
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(1, 3));
+        buttons.setLayout(new GridLayout(1, 4));
         buttons.add(add);
         buttons.add(delete);
         buttons.add(deleteLast);
+        buttons.add(process);
         processPanel.add(buttons, BorderLayout.SOUTH);
     }
 
@@ -71,7 +75,14 @@ public class ProcessPurchase extends JFrame {
 
             } else if (source == deleteLast) {
 
+            } else if (source == process){
+                completePurchase();
             }
         }
+    }
+
+    private void completePurchase() {
+        NotificationUI ui = new NotificationUI("Purchase Done", "", "Passed");
+        ui.setVisible(true);
     }
 }

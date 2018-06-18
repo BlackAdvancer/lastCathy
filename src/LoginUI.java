@@ -1,5 +1,3 @@
-package UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -46,13 +44,28 @@ class LoginUI extends JFrame {
                 // todo if successful
                 if (character.equals("Employee")) {
                     EmployeeUI ui = (EmployeeUI) object;
-                    ui.employeeID = id;
-                    ui.repaint();
-                    ui.setVisible(true);
-                    setVisible(false);
-                    dispose();
+                    if (false) { // todo
+                        NotificationUI invalidID = new NotificationUI("Invalid ID");
+                        invalidID.setVisible(true);
+                    } else {
+                        ui.employeeID = id;
+                        ui.repaint();
+                        ui.setVisible(true);
+                        setVisible(false);
+                        dispose();
+                    }
                 } else if (character.equals("Manager")) {
-                    // todo
+                    ManagerUI ui = (ManagerUI) object;
+                    if (false) { // todo
+                        NotificationUI invalidID = new NotificationUI("Invalid ID");
+                        invalidID.setVisible(true);
+                    } else {
+                        ui.managerID = id;
+                        ui.repaint();
+                        ui.setVisible(true);
+                        setVisible(false);
+                        dispose();
+                    }
                 }
             } else if (source == quit) {
                 BranchUI branchUI = new BranchUI();

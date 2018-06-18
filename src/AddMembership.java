@@ -1,5 +1,3 @@
-package UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -58,14 +56,15 @@ public class AddMembership extends JFrame {
                     String phoneNumber = ta_phoneNumber.getText();
                     if (Constraints.ifNameFormattingWrong(name)) throw new FormattingException("Wrong Name Format");
                     if (Constraints.ifPhoneFormatWrong(phoneNumber)) throw new FormattingException("Wrong Phone Number Format");
+                    // todo if membership is valid
+                    int membershipID = 111;
+                    // todo add membership
+                    NotificationUI ui = new NotificationUI("Member "+ta_name.getText()+" is added!",
+                            "Membership# is "+membershipID, "Congratulations");
+                    ui.setVisible(true);
                 } catch (FormattingException f) {
                     f.printError();
                 }
-                // todo get membership id
-                int membershipID = 111;
-                NotificationUI ui = new NotificationUI("Member "+ta_name.getText()+" is added!",
-                        "Membership# is "+membershipID, "Congratulations");
-                ui.setVisible(true);
                 // todo add member to database
                 ta_name.setText("");
                 ta_phoneNumber.setText("");

@@ -1,5 +1,3 @@
-package UI;
-
 import java.io.IOException;
 
 public class FormattingException extends IOException {
