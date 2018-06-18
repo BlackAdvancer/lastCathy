@@ -7,18 +7,18 @@ import java.awt.event.ActionListener;
 class LoginUI extends JFrame {
 
     private String character;
-    Employee employee;
+    controller controller;
     Object object;
     private final int WIDTH = 200, HEIGHT = 90;
-    public LoginUI(Object object, String character, Employee employee) {
+    public LoginUI(Object object, String character, controller obj) {
         System.out.println("MFBUG5");
         this.character = character;
+        this.controller = obj;
         this.object = object;
         setSize(WIDTH, HEIGHT);
         setTitle("Log In");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.employee = employee;
         draw();
     }
 
@@ -49,6 +49,7 @@ class LoginUI extends JFrame {
                 if (character.equals("Employee")) {
                     EmployeeUI ui = (EmployeeUI) object;
 //                    !ui.employee.validateID(id)
+                    Employee employee = (Employee) controller;
                     if (!employee.validateID(id)) {
                         NotificationUI notificationUI = new NotificationUI("invalid id");
                         notificationUI.setVisible(true);

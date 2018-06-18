@@ -34,7 +34,8 @@ public class Employee extends controller {
             con.commit();
             ps.close();
         }catch (SQLException ex){
-            System.out.println("Message: " + ex.getMessage());
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
         }
         return id;
     }
@@ -74,7 +75,8 @@ public class Employee extends controller {
             con.commit();
             ps.close();
         }catch (SQLException e){
-            System.out.println("Message: " + e.getMessage());
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
             System.exit(-1);
         }
         return  receiptNumber;
@@ -122,13 +124,15 @@ public class Employee extends controller {
             }
             ps.close();
         } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
             try {
                 con.rollback();
             }
             catch (SQLException ex2)
             {
-                System.out.println("Message: " + ex2.getMessage());
+                NotificationUI error2 = new NotificationUI(ex2.getMessage());
+                error.setVisible(true);
                 System.exit(-1);
             }
         }
@@ -180,7 +184,8 @@ public class Employee extends controller {
             }
             ps.close();
         }catch (SQLException e){
-            System.out.println("Message: " + e.getMessage());
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
             System.exit(-1);
         }
 
@@ -225,7 +230,8 @@ public class Employee extends controller {
             }
             ps.close();
         }catch (SQLException e){
-            System.out.println("Message: " + e.getMessage());
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
             System.exit(-1);
         }
         return rvalue;

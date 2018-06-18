@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 @SuppressWarnings("serial")
 class ManagerUI extends JFrame {
 
+    Manager manager;
     private final int WIDTH = 500, HEIGHT = 90;
     int managerID;
     ManagerUI() {
@@ -15,7 +16,8 @@ class ManagerUI extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         draw();
-        LoginUI loginUI = new LoginUI(this, "Manager");
+        this.manager = new Manager();
+        LoginUI loginUI = new LoginUI(this, "Manager", manager);
         loginUI.setVisible(true);
         loginUI.setResizable(false);
     }
@@ -105,7 +107,7 @@ class ManagerUI extends JFrame {
     }
 
     private void logOut() {
-        LoginUI loginUI = new LoginUI(this, "Employee");
+        LoginUI loginUI = new LoginUI(this, "Employee", manager);
         loginUI.setVisible(true);
         setVisible(false);
     }

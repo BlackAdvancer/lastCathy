@@ -112,7 +112,8 @@ public class ProcessPurchase extends JFrame {
                     }
                 }
             }catch (SQLException ex){
-                System.out.println("Message: " + ex.getMessage());
+                NotificationUI error = new NotificationUI(ex.getMessage());
+                error.setVisible(true);
             }
         }
     }

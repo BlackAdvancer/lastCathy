@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 // for reading from the command line
 // for the login window
@@ -9,108 +7,70 @@ import java.sql.Statement;
 
 public class Member extends controller {
     int memID;
+    String memName;
 
-    public void memberShowMenu() {
-        connect("ora_a1q1b", "a24581167");
+    public Member() {}
 
-        //enter system
-        checkPoint();
-
-
-        int choice;
-        boolean quit;
-
-        quit = false;
-
+    public boolean validateMemberID(int inputID) {
+        Statement statement;
+        ResultSet result;
+        int point = 0;
         try {
-            while (!quit) {
+            memName = null;
+            statement = con.createStatement();
+            result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + inputID);
+            result.next();
+            result.getInt("memberID");
+            memName = result.getString("name");
+            point = result.getInt("points");
 
-                System.out.print("\n\nPlease choose one of the following: \n");
-                System.out.print("1.  Check another membership point\n");
-                System.out.print("2.  Quit\n");
-
-                choice = Integer.parseInt(in.readLine());
-
-                System.out.println(" ");
-
-                switch (choice) {
-                    case 1:
-                        checkPoint();
-                        break;
-                    case 2:
-                        quit = true;
-                }
-            }
-
-            System.out.println("\nGood Bye!\n\n");
-            System.exit(0);
         } catch (IOException e) {
-            System.out.println("IOException!");
-
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
             try {
                 con.close();
                 System.exit(-1);
             } catch (SQLException ex) {
-                System.out.println("Message: " + ex.getMessage());
+                NotificationUI error = new NotificationUI(ex.getMessage());
+                error.setVisible(true);
             }
+        } catch (SQLException ex) {
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
         }
     }
-
-    private void checkPoint() {
-
-        boolean enterSucc = false;
+    public int checkPoint(int inputID) {
         Statement statement;
         ResultSet result;
-        int enteredID;
+        int point = 0;
+        try {
+            memName = null;
+            statement = con.createStatement();
+            result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + inputID);
+            result.next();
+            result.getInt("memberID");
+            memName = result.getString("name");
+            point = result.getInt("points");
 
-        while (!enterSucc) {
-            String memName = null;
-            int point = 0;
+        } catch (IOException e) {
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
             try {
-                System.out.println("please enter membership id. ");
-                enteredID = Integer.parseInt(in.readLine());
-                statement = con.createStatement();
-                result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + enteredID);
-                result.next();
-                result.getInt("memberID");
-                enterSucc = true;
-                memName = result.getString("name");
-                point = result.getInt("points");
-
-
-            } catch (IOException e) {
-                System.out.println("IOException!");
-
-                try {
-                    con.close();
-                    System.exit(-1);
-                } catch (SQLException ex) {
-                    System.out.println("Message: " + ex.getMessage());
-                }
+                con.close();
+                System.exit(-1);
             } catch (SQLException ex) {
-                System.out.println("Message: " + ex.getMessage());
-                enterSucc = false;
-                System.out.println("invalid membership id! ");
-                System.out.println("enter 1 to exit");
-                System.out.println("enter 2 to try again");
-                try {
-                    int exitMem = Integer.parseInt(in.readLine());
-                    if (exitMem == 1) {
-                        System.out.println("GoodBye!");
-                        System.exit(0);
-                    }
-                } catch (IOException ie) {
-                    System.out.println("io exception " + ie.getMessage());
-                }
-
+                NotificationUI error = new NotificationUI(ex.getMessage());
+                error.setVisible(true);
             }
-
-
-            System.out.println("hello " + memName);
-            System.out.println("your membership point is " + point);
-
-
+        } catch (SQLException ex) {
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
         }
+        return point;
+    }
 
+    public String getName() {
+        return memName;
     }
 }
+

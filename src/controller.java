@@ -34,7 +34,8 @@ public class controller implements ActionListener {
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
             // may be oracle.jdbc.driver.OracleDriver as of Oracle 11g
         } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
             System.exit(-1);
         }
     }
@@ -130,7 +131,8 @@ public class controller implements ActionListener {
             System.out.println("\nConnected to Oracle!");
             return true;
         } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
             return false;
         }
     }
@@ -166,7 +168,8 @@ public class controller implements ActionListener {
             // disable auto commit mode
             con.setAutoCommit(false);
         } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
         }
         BranchUI branchUI = new BranchUI();
         branchUI.setVisible(true);

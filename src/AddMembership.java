@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 @SuppressWarnings("Serial")
 public class AddMembership extends JFrame {
@@ -29,6 +30,7 @@ public class AddMembership extends JFrame {
 
     JLabel label_name, label_phone;
     JTextArea ta_name, ta_phoneNumber;
+    boolean modified = false;
     private void drawInputPanel() {
         inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout());
@@ -42,10 +44,22 @@ public class AddMembership extends JFrame {
         inputPanel.add(unchangable, BorderLayout.WEST);
         JPanel changable = new JPanel(layout);
         ta_name = new JTextArea();
-        ta_phoneNumber = new JTextArea();
+        ta_phoneNumber = new JTextArea("xxx-xxx-xxxx");
+        ta_phoneNumber.setForeground(Color.GRAY);
+        ta_phoneNumber.addMouseListener(new MouseHandler());
         changable.add(ta_name);
         changable.add(ta_phoneNumber);
         inputPanel.add(changable, BorderLayout.CENTER);
+    }
+
+    private class MouseHandler extends MouseAdapter {
+        public void mouseClicked(MouseEvent e) {
+            if (modified)
+                return;
+            ta_phoneNumber.setText("");
+            ta_phoneNumber.setForeground(Color.BLACK);
+            modified = true;
+        }
     }
 
     private class buttonHandler implements ActionListener {
@@ -58,7 +72,8 @@ public class AddMembership extends JFrame {
                     if (Constraints.ifNameFormattingWrong(name)) throw new FormattingException("Wrong Name Format");
                     if (Constraints.ifPhoneFormatWrong(phoneNumber)) throw new FormattingException("Wrong Phone Number Format");
                     // todo if membership is valid
-
+//                    Member member = new Member();
+//                    if (member)
                     int membershipID =  employee.manageMemberShip(name, phoneNumber);;
                     // todo add membership
                     NotificationUI ui = new NotificationUI("Member "+ta_name.getText()+" is added!",
