@@ -7,46 +7,41 @@ import java.util.*;
 
 public class Manager extends controller{
 
-    private int managerID;
+    public int managerID;
     private int branch;
 
-    public void validateID () {
-        int               input;
+    public boolean validateID (int input) {
         int               id;
         boolean           quit = false;
         ResultSet         rs;
         PreparedStatement ps;
 
-        System.out.println(connect("ora_a1q1b", "a24581167"));
+        //System.out.println(connect("ora_a1q1b", "a24581167"));
         try {
             while (!quit) {
-                System.out.print("\n\nPlease enter your manager id or press enter 0 to quit: \n");
-
-                input = Integer.parseInt(in.readLine());
+                //System.out.print("\n\nPlease enter your manager id or press enter 0 to quit: \n");
 
                 if (input != 0) {
-                    //id = input;
-                    id = 1252;
+                    id = input;
                     ps = con.prepareStatement("SELECT * FROM Clerk WHERE clerkID = ? AND type = 'Manager'");
                     ps.setInt(1, id);
 
                     rs = ps.executeQuery();
-
+                    ps.close();
                     if (rs.next()) {
                         System.out.print("Access granted: Welcome.");
                         managerID = id;
-
-
                         branch = rs.getInt("branchNumber");
-
                         showMenu();
+                        return  true;
+
                     } else {
-                        System.out.print("Access denied: Invalid manager ID.");
+                        return false;
                     }
 
                     // close the statement;
                     // the ResultSet will also be closed
-                    ps.close();
+
                 } else { // User quits the system
                     quit = true;
                     System.exit(0);
@@ -64,6 +59,7 @@ public class Manager extends controller{
                 System.exit(-1);
             }
         }
+        return true;
     }
 
     public void showMenu() throws SQLException, IOException{

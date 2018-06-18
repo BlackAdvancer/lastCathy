@@ -63,6 +63,21 @@ class LoginUI extends JFrame {
                     }
                 } else if (character.equals("Manager")) {
                     // todo
+                    ManagerUI ui = (ManagerUI) object;
+//                    !ui.employee.validateID(id)
+                    Manager manager = (Manager) controller;
+                    if (!manager.validateID(id)) {
+                        NotificationUI notificationUI = new NotificationUI("invalid id");
+                        notificationUI.setVisible(true);
+                    } else {
+                        ui.managerID = id;
+                        System.out.println(ui.manager.managerID);
+                        ui.repaint();
+                        ui.setVisible(true);
+                        setVisible(false);
+                        dispose();
+                    }
+
                 }
             } else if (source == quit) {
                 BranchUI branchUI = new BranchUI();

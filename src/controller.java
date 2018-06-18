@@ -14,7 +14,7 @@ import java.awt.event.*;
 public class controller implements ActionListener {
     // command line reader
     protected Connection con;
-
+    protected BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     // user is allowed 3 login attempts
     private int loginAttempts = 0;
 

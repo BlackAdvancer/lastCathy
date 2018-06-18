@@ -8,7 +8,7 @@ class ManagerUI extends JFrame {
 
     Manager manager;
     private final int WIDTH = 500, HEIGHT = 90;
-    int managerID;
+    public int managerID;
     ManagerUI() {
         setSize(WIDTH, HEIGHT);
         setTitle("ManagerUI");
