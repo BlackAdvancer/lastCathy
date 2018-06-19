@@ -1,78 +1,50 @@
 import java.io.IOException;
 import java.sql.*;
-
 // for reading from the command line
 // for the login window
 
-
 public class Member extends controller {
     int memID;
-    String memName;
+    public Member() {
+        connect("ora_a1q1b", "a24581167");
+    }
+    public boolean validateID(int input) {
+        int id;
+        boolean correct = false;
+        ResultSet rs;
+        PreparedStatement ps;
+        try {
+            ps = con.prepareStatement("SELECT points FROM MemberShip WHERE memberID = ?");
+            ps.setInt(1, input);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                memID = input;
+                correct = true;
+            }
+            ps.close();
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return correct;
+    }
 
-    public Member() {}
-
-//    public boolean validateMemberID(int inputID) {
-//        Statement statement;
-//        ResultSet result;
-//        int point = 0;
-//        try {
-//            memName = null;
-//            statement = con.createStatement();
-//            result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + inputID);
-//            result.next();
-//            result.getInt("memberID");
-//            memName = result.getString("name");
-//            point = result.getInt("points");
-//
-//        } catch (IOException e) {
-//            NotificationUI error = new NotificationUI(e.getMessage());
-//            error.setVisible(true);
-//            try {
-//                con.close();
-//                System.exit(-1);
-//            } catch (SQLException ex) {
-//                NotificationUI error = new NotificationUI(ex.getMessage());
-//                error.setVisible(true);
-//            }
-//        } catch (SQLException ex) {
-//            NotificationUI error = new NotificationUI(ex.getMessage());
-//            error.setVisible(true);
-//        }
-//    }
-    public int checkPoint(int inputID) {
+    public int checkPoint() {
+        String    name;
         Statement statement;
         ResultSet result;
-        int point = 0;
+        int       points = 0;
         try {
-            memName = null;
             statement = con.createStatement();
-            result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + inputID);
+            result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + memID);
             result.next();
             result.getInt("memberID");
-            memName = result.getString("name");
-            point = result.getInt("points");
-
+            // name = result.getString("name");
+            points = result.getInt("points");
+            return points;
+        } catch (SQLException e){
+            System.out.println("Message: " + e.getMessage());
+            System.exit(-1);
         }
-//        catch (IOException e) {
-//            NotificationUI error = new NotificationUI(e.getMessage());
-//            error.setVisible(true);
-//            try {
-//                con.close();
-//                System.exit(-1);
-//            } catch (SQLException ex) {
-//               // NotificationUI error = new NotificationUI(ex.getMessage());
-//                error.setVisible(true);
-//            }
-//        }
-        catch (SQLException ex) {
-            NotificationUI error = new NotificationUI(ex.getMessage());
-            error.setVisible(true);
-        }
-        return point;
-    }
-
-    public String getName() {
-        return memName;
+        return points;
     }
 }
-
