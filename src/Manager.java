@@ -1,59 +1,49 @@
 // We need to import the java.sql package to use JDBC
+
 import java.sql.*;
 
 // for reading from the command line
 import java.io.*;
 import java.util.*;
 
-public class Manager extends controller{
+public class Manager extends controller {
 
-    private int managerID;
+    public int managerID;
     private int branch;
 
-    public void validateID () {
-        int               input;
-        int               id;
-        boolean           quit = false;
-        ResultSet         rs;
+    public boolean validateID(int input) {
+        int id;
+        boolean quit = false;
+        ResultSet rs;
         PreparedStatement ps;
 
-        System.out.println(connect("ora_a1q1b", "a24581167"));
+        //System.out.println(connect("ora_a1q1b", "a24581167"));
         try {
-            while (!quit) {
-                System.out.print("\n\nPlease enter your manager id or press enter 0 to quit: \n");
+            //System.out.print("\n\nPlease enter your manager id or press enter 0 to quit: \n");
+            id = input;
+            String connectURL = "jdbc:oracle:thin:@dbhost.ugrad.cs.ubc.ca:1522:ug";
+            con = DriverManager.getConnection(connectURL, "ora_a1q1b", "a24581167");
+            ps = con.prepareStatement("SELECT * FROM Clerk WHERE clerkID = ? AND type = 'Manager'");
+            ps.setInt(1, id);
 
-                input = Integer.parseInt(in.readLine());
+            rs = ps.executeQuery();
 
-                if (input != 0) {
-                    //id = input;
-                    id = 1252;
-                    ps = con.prepareStatement("SELECT * FROM Clerk WHERE clerkID = ? AND type = 'Manager'");
-                    ps.setInt(1, id);
+            if (rs.next()) {
+                System.out.print("Access granted: Welcome.");
+                managerID = id;
+                branch = rs.getInt("branchNumber");
+                //showMenu();
+                ps.close();
+                return true;
 
-                    rs = ps.executeQuery();
-
-                    if (rs.next()) {
-                        System.out.print("Access granted: Welcome.");
-                        managerID = id;
-
-
-                        branch = rs.getInt("branchNumber");
-
-                        showMenu();
-                    } else {
-                        System.out.print("Access denied: Invalid manager ID.");
-                    }
-
-                    // close the statement;
-                    // the ResultSet will also be closed
-                    ps.close();
-                } else { // User quits the system
-                    quit = true;
-                    System.exit(0);
-                }
+            } else {
+                ps.close();
+                return false;
             }
-        } catch (IOException e) {
-            System.out.println("IOException!");
+
+            // close the statement;
+            // the ResultSet will also be closed
+
         } catch (SQLException ex) {
             System.out.println("Message: " + ex.getMessage());
 
@@ -63,63 +53,64 @@ public class Manager extends controller{
                 System.out.println("Message: " + ex2.getMessage());
                 System.exit(-1);
             }
+            return false;
         }
     }
 
-    public void showMenu() throws SQLException, IOException{
-        int     choice;
+    public void showMenu() throws SQLException, IOException {
+        int choice;
         boolean quit = false;
 
         while (!quit) {
-          System.out.print("\n");
-          System.out.print("1.  Show all employees\n");
-          System.out.print("2.  Manage employee\n");
-          System.out.print("3.  Manage item\n");
-          System.out.print("4.  Manage membership\n");
-          System.out.print("5.  Manage deal\n");
-          System.out.print("6.  Generate report for certain period\n");
-          System.out.print("7.  Get transaction since...\n");
-          System.out.print("8.  Get Minimum wage for each branch\n");
-          System.out.print("9.  Quit\n>> ");
+            System.out.print("\n");
+            System.out.print("1.  Show all employees\n");
+            System.out.print("2.  Manage employee\n");
+            System.out.print("3.  Manage item\n");
+            System.out.print("4.  Manage membership\n");
+            System.out.print("5.  Manage deal\n");
+            System.out.print("6.  Generate report for certain period\n");
+            System.out.print("7.  Get transaction since...\n");
+            System.out.print("8.  Get Minimum wage for each branch\n");
+            System.out.print("9.  Quit\n>> ");
 
-          choice = Integer.parseInt(in.readLine());
-          System.out.println(" ");
-          switch (choice) {
-              case 1:
-                  showAllEmployees();
-                  break;
-              case 2:
-                  manageEmployeeWage();
-                  break;
-              case 3:
-                  manageItem();
-                  break;
-              case 4:
-                  manageMembership();
-                  break;
-              case 5:
-                  manageDeal();
-                  break;
-              case 6:
-                  getSalesRecord();
-                  break;
-              case 7:
-                  getTotalTransactionAmount();
-                  break;
-              case 8:
-                  getMinWageFromAllBranches();
-                  break;
-              case 9:
-                  quit = true;
-          }
-      }
+            choice = Integer.parseInt(in.readLine());
+            System.out.println(" ");
+            switch (choice) {
+                case 1:
+                    showAllEmployees();
+                    break;
+                case 2:
+                    manageEmployeeWage();
+                    break;
+                case 3:
+                    manageItem();
+                    break;
+                case 4:
+                    manageMembership();
+                    break;
+                case 5:
+                    manageDeal();
+                    break;
+                case 6:
+                    getSalesRecord();
+                    break;
+                case 7:
+                    getTotalTransactionAmount();
+                    break;
+                case 8:
+                    getMinWageFromAllBranches();
+                    break;
+                case 9:
+                    quit = true;
+            }
+        }
 
     }
 
-    private void manageEmployeeWage() throws IOException, SQLException{
-        int                id;
-        int                wage;
-        PreparedStatement  ps;
+    private void manageEmployeeWage() throws IOException, SQLException {
+        int id;
+        int wage;
+        PreparedStatement ps;
 
         ps = con.prepareStatement("UPDATE Clerk SET wage = ? WHERE clerkID = ?");
 
@@ -149,12 +140,12 @@ public class Manager extends controller{
 
     private void showEmployee(int id) throws IOException, SQLException {
         int clerkID = id;
-        String     name;
-        String     type;
-        int        wage;
-        int        branchNumber;
-        PreparedStatement  ps;
-        ResultSet  rs;
+        String name;
+        String type;
+        int wage;
+        int branchNumber;
+        PreparedStatement ps;
+        ResultSet rs;
 
         ps = con.prepareStatement("SELECT * FROM Clerk WHERE clerkID = ?");
         ps.setInt(1, clerkID);
@@ -169,16 +160,14 @@ public class Manager extends controller{
         System.out.println(" ");
 
         // display column names;
-        for (int i = 0; i < numCols; i++)
-        {
+        for (int i = 0; i < numCols; i++) {
             // get column name and print it
-            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
         }
 
         System.out.println(" ");
 
-        while(rs.next())
-        {
+        while (rs.next()) {
             // simplified output formatting; truncation may occur
             clerkID = rs.getInt("clerkID");
             System.out.printf("%-5s", clerkID);
@@ -198,13 +187,13 @@ public class Manager extends controller{
     }
 
     private void showAllEmployees() throws SQLException {
-        int     clerkID;
-        String     name;
-        String     type;
-        int        wage;
-        int        branchNumber;
-        Statement  stmt;
-        ResultSet  rs;
+        int clerkID;
+        String name;
+        String type;
+        int wage;
+        int branchNumber;
+        Statement stmt;
+        ResultSet rs;
 
         stmt = con.createStatement();
         rs = stmt.executeQuery("SELECT * FROM Clerk");
@@ -218,16 +207,14 @@ public class Manager extends controller{
         System.out.println(" ");
 
         // display column names;
-        for (int i = 0; i < numCols; i++)
-        {
+        for (int i = 0; i < numCols; i++) {
             // get column name and print it
-            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
         }
 
         System.out.println(" ");
 
-        while(rs.next())
-        {
+        while (rs.next()) {
             // simplified output formatting; truncation may occur
             clerkID = rs.getInt("clerkID");
             System.out.printf("%-5s", clerkID);
@@ -249,9 +236,9 @@ public class Manager extends controller{
         stmt.close();
     }
 
-    private void manageItem() throws IOException, SQLException{
+    private void manageItem() throws IOException, SQLException {
 
-        int     choice;
+        int choice;
         boolean quit = false;
 
         while (!quit) {
@@ -266,7 +253,7 @@ public class Manager extends controller{
 
             switch (choice) {
                 case 1:
-                    manageItemStorage();
+                    //manageItemStorage();
                     break;
                 case 2:
                     manageItemPrice();
@@ -277,25 +264,57 @@ public class Manager extends controller{
         }
     }
 
-    private void manageItemStorage() throws IOException, SQLException{
+    public String manageItemStorage(int id, int amount) {
+        try {
+            PreparedStatement ps;
+
+            ps = con.prepareStatement("UPDATE Storage SET amount = ? WHERE itemID = ? AND branchNumber = ?");
+            System.out.print("\nItem ID: ");
+
+            ps.setInt(2, id);
+            ps.setInt(3, branch);
+            displayItemInfo(id);
+            System.out.print("\nSet new storage amount: ");
+            if (amount < 0) {
+                return "Invalid amount!";
+//                System.out.print("\nStorage cannot be negative, please try again: ");
+//                amount = Integer.parseInt(in.readLine());
+            }
+            ps.setInt(1, amount);
+
+            int rowCount = ps.executeUpdate();
+            if (rowCount == 0) {
+                System.out.println("\nStorage of item ID " + id + " does not exist in your branch!");
+                return "failed";
+            }
+            con.commit();
+        } catch (SQLException se) {
+            System.out.println("sql exception");
+            return "failed";
+        }
+        return "succeed!";
+
+    }
+
+    private void manageItemPrice() throws IOException, SQLException {
         int id;
-        int amount;
+        double price;
         PreparedStatement ps;
 
-        ps = con.prepareStatement("UPDATE Storage SET amount = ? WHERE itemID = ? AND branchNumber = ?");
+        ps = con.prepareStatement("UPDATE Item SET price = ? WHERE itemID = ? AND branchNumber = ?");
         System.out.print("\nItem ID: ");
         id = Integer.parseInt(in.readLine());
 
         ps.setInt(2, id);
         ps.setInt(3, branch);
         displayItemInfo(id);
-        System.out.print("\nSet new storage amount: ");
-        amount = Integer.parseInt(in.readLine());
-        while (amount < 0) {
+        System.out.print("\nSet new storage price: ");
+        price = Double.parseDouble(in.readLine());
+        while (price < 0) {
             System.out.print("\nStorage cannot be negative, please try again: ");
-            amount = Integer.parseInt(in.readLine());
+            price = Double.parseDouble(in.readLine());
         }
-        ps.setInt(1, amount);
+        ps.setDouble(1, price);
 
         int rowCount = ps.executeUpdate();
         if (rowCount == 0) {
@@ -304,40 +323,13 @@ public class Manager extends controller{
         con.commit();
     }
 
-    private void manageItemPrice() throws IOException, SQLException {
-      int id;
-      double price;
-      PreparedStatement ps;
-
-      ps = con.prepareStatement("UPDATE Item SET price = ? WHERE itemID = ? AND branchNumber = ?");
-      System.out.print("\nItem ID: ");
-      id = Integer.parseInt(in.readLine());
-
-      ps.setInt(2, id);
-      ps.setInt(3, branch);
-      displayItemInfo(id);
-      System.out.print("\nSet new storage price: ");
-      price = Double.parseDouble(in.readLine());
-      while (price < 0) {
-          System.out.print("\nStorage cannot be negative, please try again: ");
-          price = Double.parseDouble(in.readLine());
-      }
-      ps.setDouble(1, price);
-
-      int rowCount = ps.executeUpdate();
-      if (rowCount == 0) {
-          System.out.println("\nStorage of item ID " + id + " does not exist in your branch!");
-      }
-      con.commit();
-    }
-
-    private void displayItemInfo(int id) throws IOException, SQLException {
+    private void displayItemInfo(int id) throws SQLException {
         int itemID = id;
-        String     name;
-        String     type;
-        int        price;
-        PreparedStatement  ps;
-        ResultSet  rs;
+        String name;
+        String type;
+        int price;
+        PreparedStatement ps;
+        ResultSet rs;
 
         ps = con.prepareStatement("SELECT * FROM Item WHERE itemID = ?");
         ps.setInt(1, itemID);
@@ -352,16 +344,14 @@ public class Manager extends controller{
         System.out.println(" ");
 
         // display column names;
-        for (int i = 0; i < numCols; i++)
-        {
+        for (int i = 0; i < numCols; i++) {
             // get column name and print it
-            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
         }
 
         System.out.println(" ");
 
-        while(rs.next())
-        {
+        while (rs.next()) {
             // simplified output formatting; truncation may occur
             itemID = rs.getInt("itemID");
             System.out.printf("%-5s", itemID);
@@ -377,48 +367,49 @@ public class Manager extends controller{
         }
     }
 
-    private void manageMembership(){
-        try{
-          String name;
-          String phone;
-          PreparedStatement ps;
-          ResultSet rs;
-          int id = 0;
-          int point;
-          boolean current = false;
-          Random r = new Random();
+    private void manageMembership() {
+        try {
+            String name;
+            String phone;
+            PreparedStatement ps;
+            ResultSet rs;
+            int id = 0;
+            int point;
+            boolean current = false;
+            Random r = new Random();
 
-          while(!current) {
-              id = r.nextInt(1000);
-              ps = con.prepareStatement("SELECT * FROM MemberShip WHERE memberID = ?");
-              ps.setInt(1, id);
-              rs = ps.executeQuery();
-              if(!rs.next())
-                  current = true;
-              ps.close();
-          }
+            while (!current) {
+                id = r.nextInt(1000);
+                ps = con.prepareStatement("SELECT * FROM MemberShip WHERE memberID = ?");
+                ps.setInt(1, id);
+                rs = ps.executeQuery();
+                if (!rs.next())
+                    current = true;
+                ps.close();
+            }
 
-          ps = con.prepareStatement("INSERT INTO MemberShip VALUES (?,?,?,0)");
-          ps.setInt(1,id);
-          System.out.print("\nplease Enter Member name : \n");
-          name = in.readLine();
-          ps.setString(2,name);
-          System.out.print("\nplease Enter Member phone number : \n");
-          phone = in.readLine();
-          ps.setString(3,phone);
-          ps.executeUpdate();
+            ps = con.prepareStatement("INSERT INTO MemberShip VALUES (?,?,?,0)");
+            ps.setInt(1, id);
+            System.out.print("\nplease Enter Member name : \n");
+            name = in.readLine();
+            ps.setString(2, name);
+            System.out.print("\nplease Enter Member phone number : \n");
+            phone = in.readLine();
+            ps.setString(3, phone);
+            ps.executeUpdate();
 
-          con.commit();
-          ps.close();
-        } catch (IOException e){
-          System.out.println("IOException!");
+            con.commit();
+            ps.close();
+        } catch (IOException e) {
+            System.out.println("IOException!");
         } catch (SQLException se) {
-          System.out.println("SQLException!");
+            System.out.println("SQLException!");
         }
 
     }
-    private void manageDeal(){
-        int     choice;
+
+    private void manageDeal() {
+        int choice;
         boolean quit = false;
 
         try {
@@ -443,13 +434,13 @@ public class Manager extends controller{
                         modifyDeal();
                 }
             }
-        }  catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("IOException!");
         }
     }
 
-    private void modifyDeal(){
-        int     choice;
+    private void modifyDeal() {
+        int choice;
         boolean quit = false;
 
         try {
@@ -486,27 +477,27 @@ public class Manager extends controller{
                         break;
                 }
             }
-        }  catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("IOException!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void deleteItemFromDeal() throws IOException, SQLException{
-      System.out.println("please enter itemID");
-      int itemId = searchItem();
-      System.out.println("please enter deal name");
-      String dealName = searchDeal();
-      try{
-        PreparedStatement ps = con.prepareStatement("DELETE FROM ItemsInDeal WHRER dealName = \'"+dealName+"\' AND itemID = ?");
-        ps.setInt(1, itemId);
-        ps.executeUpdate();
-        con.commit();
-        System.out.println("successed!");
-      } catch(SQLException se){
-        System.out.println("delete failed!\n back to menu");
-      }
+    private void deleteItemFromDeal() throws IOException, SQLException {
+        System.out.println("please enter itemID");
+        int itemId = searchItem();
+        System.out.println("please enter deal name");
+        String dealName = searchDeal();
+        try {
+            PreparedStatement ps = con.prepareStatement("DELETE FROM ItemsInDeal WHRER dealName = \'" + dealName + "\' AND itemID = ?");
+            ps.setInt(1, itemId);
+            ps.executeUpdate();
+            con.commit();
+            System.out.println("successed!");
+        } catch (SQLException se) {
+            System.out.println("delete failed!\n back to menu");
+        }
 
     }
 
@@ -514,67 +505,67 @@ public class Manager extends controller{
         System.out.println("\n please enter the itemID you want to add to deal ");
         int itemID = searchItem();
         System.out.println("please enter deal name ");
-        String  dealName = searchDeal();
+        String dealName = searchDeal();
         System.out.println("please enter percentage ");
         double persent = Double.parseDouble(in.readLine());
         PreparedStatement ps = con.prepareStatement("INSERT INTO ItemsInDeal VALUES (?,?,?)");
-        ps.setInt(1,itemID);
-        ps.setString(2,dealName);
+        ps.setInt(1, itemID);
+        ps.setString(2, dealName);
         ps.setDouble(3, persent);
         ps.executeUpdate();
         System.out.println("Success!!!");
         con.commit();
         ps.close();
     }
-    private int searchItem() throws IOException, SQLException{
+
+    private int searchItem() throws IOException, SQLException {
         boolean acc = false;
         int itemID = 0;
-        while (!acc){
+        while (!acc) {
             System.out.print("ItemID: ");
             itemID = Integer.parseInt(in.readLine());
             Statement s = con.createStatement();
             ResultSet res = s.executeQuery("SELECT * FROM Item WHERE itemID = " + itemID);
-            if(!res.next()) {
+            if (!res.next()) {
                 System.out.println("no such item please try again! ");
             } else {
                 acc = true;
                 return itemID;
             }
         }
-        return  itemID;
+        return itemID;
 
     }
 
     private String searchDeal() throws IOException, SQLException {
         boolean acc = false;
         String dealName = null;
-        while (!acc){
+        while (!acc) {
             System.out.print("dealName: ");
             dealName = in.readLine();
-            PreparedStatement s = con.prepareStatement("SELECT * FROM Deal WHERE dealName = \'"+dealName+"\'");
+            PreparedStatement s = con.prepareStatement("SELECT * FROM Deal WHERE dealName = \'" + dealName + "\'");
             //s.setString(1, dealName);
             ResultSet res = s.executeQuery();
-            if(!res.next()) {
+            if (!res.next()) {
                 System.out.println("no such deal please try again! ");
             } else {
                 acc = true;
                 return dealName;
             }
         }
-        return  dealName;
+        return dealName;
 
     }
 
-    private void showAllDeals(){
-        String     dealName;
-        String     duration;
+    private void showAllDeals() {
+        String dealName;
+        String duration;
         int itemID;
         double percentage;
 
-        Statement  stmt;
-        ResultSet  rs;
-        try
-        {
+        Statement stmt;
+        ResultSet rs;
+        try {
             stmt = con.createStatement();
 
             rs = stmt.executeQuery("SELECT d.dealName AS dealName, d.duration as duration, id.itemId as itemId, id.percentage as persentage FROM Deal d, ItemsInDeal id WHERE d.dealName = id.dealName");
@@ -584,14 +575,12 @@ public class Manager extends controller{
             int numCols = rsmd.getColumnCount();
             System.out.println(" ");
             // display column names;
-            for (int i = 0; i < numCols; i++)
-            {
+            for (int i = 0; i < numCols; i++) {
                 // get column name and print it
-                System.out.printf("%-15s", rsmd.getColumnName(i+1));
-           }
+                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+            }
             System.out.println(" ");
-            while(rs.next())
-            {
+            while (rs.next()) {
                 // for display purposes get everything from Oracle
                 // as a string
                 // simplified output formatting; truncation may occur
@@ -607,9 +596,7 @@ public class Manager extends controller{
             // close the statement;
             // the ResultSet will also be closed
             stmt.close();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             System.out.println("Message: " + ex.getMessage());
         }
     }
@@ -639,7 +626,7 @@ public class Manager extends controller{
                 int startM = Integer.parseInt(in.readLine());
                 System.out.print("start day:");
                 int startD = Integer.parseInt(in.readLine());
-                startDate = new Timestamp(startY, startM, startD, 0,0,0,0);
+                startDate = new Timestamp(startY, startM, startD, 0, 0, 0, 0);
                 System.out.print("end year:");
                 int endY = Integer.parseInt(in.readLine());
                 System.out.print("end month:");
@@ -706,7 +693,7 @@ public class Manager extends controller{
         }
     }
 
-    private void getSalesRecord() throws IOException, SQLException{
+    private void getSalesRecord() throws IOException, SQLException {
         int receiptNumber;
         java.sql.Timestamp purchaseTime;
         java.sql.Timestamp purchaseDate;
@@ -718,8 +705,8 @@ public class Manager extends controller{
         int clerkID;
         int branchNumber;
 
-        PreparedStatement  ps;
-        ResultSet  rs;
+        PreparedStatement ps;
+        ResultSet rs;
 
         System.out.print("\nEnter starting year: ");
         inputYear = Integer.parseInt(in.readLine());
@@ -758,31 +745,30 @@ public class Manager extends controller{
         System.out.println(" ");
 
         // display column names;
-        for (int i = 0; i < numCols; i++)
-        {
-          // get column name and print it
-          System.out.printf("%-15s", rsmd.getColumnName(i+1));
+        for (int i = 0; i < numCols; i++) {
+            // get column name and print it
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
         }
 
         System.out.println(" ");
-        while(rs.next()) {
-          receiptNumber = rs.getInt("receiptNumber");
-          System.out.printf("%-10.10s", receiptNumber);
+        while (rs.next()) {
+            receiptNumber = rs.getInt("receiptNumber");
+            System.out.printf("%-10.10s", receiptNumber);
 
-          purchaseTime = rs.getTimestamp("purchaseTime");
-          System.out.printf("%-20.20s", purchaseTime);
+            purchaseTime = rs.getTimestamp("purchaseTime");
+            System.out.printf("%-20.20s", purchaseTime);
 
-          totalPrice = rs.getDouble("totalPrice");
-          System.out.printf("%-15.15s", totalPrice);
+            totalPrice = rs.getDouble("totalPrice");
+            System.out.printf("%-15.15s", totalPrice);
 
-          clerkID = rs.getInt("clerkID");
-          System.out.printf("%-15.15s", clerkID);
+            clerkID = rs.getInt("clerkID");
+            System.out.printf("%-15.15s", clerkID);
 
-          branchNumber = rs.getInt("branchNumber");
-          System.out.printf("%-15.15s\n", branchNumber);
+            branchNumber = rs.getInt("branchNumber");
+            System.out.printf("%-15.15s\n", branchNumber);
 
-          // close the statement;
-          // the ResultSet will also be closed
+            // close the statement;
+            // the ResultSet will also be closed
         }
         ps.close();
     }
@@ -791,134 +777,133 @@ public class Manager extends controller{
         System.out.println("please enter the deal name you want to delete");
         String dName = searchDeal();
         Statement ps = con.createStatement();
-        ps.executeUpdate("DELETE FROM (SELECT * FROM Deal d WHERE d.dealName = \'"+dName+"\')");
+        ps.executeUpdate("DELETE FROM (SELECT * FROM Deal d WHERE d.dealName = \'" + dName + "\')");
         con.commit();
         System.out.println("delete successed!");
     }
 
-    private void modifyDealPercent() throws IOException, SQLException{
-      System.out.print("please enter deal name");
-      String dealName = searchDeal();
-      System.out.println("plase enter item id");
-      int itemId = searchItem();
-      System.out.println("please enter new percentage");
-      double percent = Double.parseDouble(in.readLine());
-      try {
-        PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'"+dealName+"\'");
-        ps.setDouble(1, percent);
-        ps.setInt(2, itemId);
-        ps.executeUpdate();
-        con.commit();
-        System.out.println("successed!");
-      } catch(SQLException se){
-        System.out.println("update failed!");
-      }
+    private void modifyDealPercent() throws IOException, SQLException {
+        System.out.print("please enter deal name");
+        String dealName = searchDeal();
+        System.out.println("plase enter item id");
+        int itemId = searchItem();
+        System.out.println("please enter new percentage");
+        double percent = Double.parseDouble(in.readLine());
+        try {
+            PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'" + dealName + "\'");
+            ps.setDouble(1, percent);
+            ps.setInt(2, itemId);
+            ps.executeUpdate();
+            con.commit();
+            System.out.println("successed!");
+        } catch (SQLException se) {
+            System.out.println("update failed!");
+        }
 
     }
 
     private void modifyDealDuration() throws IOException, SQLException {
-      System.out.println("enter the deal name you want to modify");
-      String dealName = searchDeal();
-      System.out.print("\nEnter starting year: ");
-      int inputYear = Integer.parseInt(in.readLine());
+        System.out.println("enter the deal name you want to modify");
+        String dealName = searchDeal();
+        System.out.print("\nEnter starting year: ");
+        int inputYear = Integer.parseInt(in.readLine());
 
-      System.out.print("\nEnter starting Month: ");
-      int inputMonth = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter starting Month: ");
+        int inputMonth = Integer.parseInt(in.readLine());
 
-      System.out.print("\nEnter starting Day: ");
-      int inputDay = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter starting Day: ");
+        int inputDay = Integer.parseInt(in.readLine());
 
-      java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
+        java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
 
-      System.out.print("\nEnter ending year: ");
-       inputYear = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter ending year: ");
+        inputYear = Integer.parseInt(in.readLine());
 
-      System.out.print("\nEnter ending Month: ");
-      inputMonth = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter ending Month: ");
+        inputMonth = Integer.parseInt(in.readLine());
 
-      System.out.print("\nEnter ending Day: ");
-      inputDay = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter ending Day: ");
+        inputDay = Integer.parseInt(in.readLine());
 
-      java.sql.Timestamp endDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
-      PreparedStatement ps = con.prepareStatement("UPDATE Deal d SET d.startDate = ? AND d.endDate = ? WHERE d.dealName = \'"+dealName+"\'");
-      ps.setTimestamp(1, startDate);
-      ps.setTimestamp(2, endDate);
-      ps.executeUpdate();
-      con.commit();
-      System.out.println("successed!");
+        java.sql.Timestamp endDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
+        PreparedStatement ps = con.prepareStatement("UPDATE Deal d SET d.startDate = ? AND d.endDate = ? WHERE d.dealName = \'" + dealName + "\'");
+        ps.setTimestamp(1, startDate);
+        ps.setTimestamp(2, endDate);
+        ps.executeUpdate();
+        con.commit();
+        System.out.println("successed!");
 
 
     }
+
     private void getTotalTransactionAmount() throws SQLException, IOException {
         Double totalPrice;
         int count;
-         int inputYear;
-         int inputMonth;
-         int inputDay;
-         PreparedStatement ps;
-         ResultSet rs;
-         System.out.print("\nEnter starting year: ");
-         inputYear = Integer.parseInt(in.readLine());
-         System.out.print("\nEnter starting month: ");
-         inputMonth= Integer.parseInt(in.readLine());
-         System.out.print("\nEnter starting day:");
-         inputDay = Integer.parseInt(in.readLine());
-         java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
-         ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime <= ? AND branchNumber = ?");
-         //ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime >= '2015-01-01 0:0:0' AND branchNumber = 05");
-         ps.setTimestamp(1, startDate);
-         ps.setInt(2, branch);
-         System.out.println("Gay1");
-         rs = ps.executeQuery();
-         ResultSetMetaData rsmd = rs.getMetaData();
-         int numCols = rsmd.getColumnCount();
-         for (int i = 0; i < numCols; i++)
-               {
-                  // get column name and print it
-                  System.out.printf("%-15s", rsmd.getColumnName(i+1));
-                  System.out.println("Gay2");
-               }
-         System.out.println(" ");
-          while (rs.next()) {
-            System.out.println("Gay3");
-           totalPrice = rs.getDouble("SUM");
-            System.out.printf("%-10s", totalPrice);
-           count = rs.getInt("CON");
-            System.out.printf("%-5s", count);
-          }
-          ps.close();
-  }
-  private void getMinWageFromAllBranches() throws SQLException {
-   int wage;
-   int branch;
-    int clerkID;
-   Statement stmt;
-   ResultSet rs;
-   stmt = con.createStatement();
-    rs   = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
-   ResultSetMetaData rsmd = rs.getMetaData();
-          // get number of columns
-    int numCols = rsmd.getColumnCount();
-    System.out.println(" ");
-          // display column names;
-    for (int i = 0; i < numCols; i++)
-    {
-        // get column name and print it
-        System.out.printf("%-15s", rsmd.getColumnName(i+1));
-    }
+        int inputYear;
+        int inputMonth;
+        int inputDay;
+        PreparedStatement ps;
+        ResultSet rs;
+        System.out.print("\nEnter starting year: ");
+        inputYear = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter starting month: ");
+        inputMonth = Integer.parseInt(in.readLine());
+        System.out.print("\nEnter starting day:");
+        inputDay = Integer.parseInt(in.readLine());
+        java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
+        ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime <= ? AND branchNumber = ?");
+        //ps = con.prepareStatement("SELECT SUM(totalPrice) AS SUM, COUNT(receiptNumber) AS CON FROM Purchase WHERE purchaseTime >= '2015-01-01 0:0:0' AND branchNumber = 05");
+        ps.setTimestamp(1, startDate);
+        ps.setInt(2, branch);
+        System.out.println("Gay1");
+        rs = ps.executeQuery();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int numCols = rsmd.getColumnCount();
+        for (int i = 0; i < numCols; i++) {
+            // get column name and print it
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+            System.out.println("Gay2");
+        }
         System.out.println(" ");
-    while(rs.next())
-    {
-              // simplified output formatting; truncation may occur
-          wage= rs.getInt("MIN(wage)");
-          System.out.printf("%-5s", wage);
-          clerkID = rs.getInt("clerkID");
-          System.out.printf("%-5s", clerkID);
-          branch = rs.getInt("branchNumber");
-          System.out.printf("%-5s\n", branch);
-      }
-      // close the statement;
-      // the ResultSet will also be closed
-      stmt.close();
-  }
+        while (rs.next()) {
+            System.out.println("Gay3");
+            totalPrice = rs.getDouble("SUM");
+            System.out.printf("%-10s", totalPrice);
+            count = rs.getInt("CON");
+            System.out.printf("%-5s", count);
+        }
+        ps.close();
+    }
+
+    private void getMinWageFromAllBranches() throws SQLException {
+        int wage;
+        int branch;
+        int clerkID;
+        Statement stmt;
+        ResultSet rs;
+        stmt = con.createStatement();
+        rs = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+        ResultSetMetaData rsmd = rs.getMetaData();
+        // get number of columns
+        int numCols = rsmd.getColumnCount();
+        System.out.println(" ");
+        // display column names;
+        for (int i = 0; i < numCols; i++) {
+            // get column name and print it
+            System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+        }
+        System.out.println(" ");
+        while (rs.next()) {
+            // simplified output formatting; truncation may occur
+            wage = rs.getInt("MIN(wage)");
+            System.out.printf("%-5s", wage);
+            clerkID = rs.getInt("clerkID");
+            System.out.printf("%-5s", clerkID);
+            branch = rs.getInt("branchNumber");
+            System.out.printf("%-5s\n", branch);
+        }
+        // close the statement;
+        // the ResultSet will also be closed
+        stmt.close();
+    }
 }

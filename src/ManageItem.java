@@ -175,7 +175,28 @@ public class ManageItem extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Object source = e.getSource();
                 if (source == setStorage) {
+                    Manager m = new Manager();
+                    int amount=0;
+                    int iid =0;
+                    try{
+                        amount = Integer.parseInt(tf_amount.getText());
+                        iid = Integer.parseInt(tf_itemNumber.getText());
+                    } catch (Exception ee){
+                        NotificationUI notificationUI = new NotificationUI("invalid input!");
+                        notificationUI.setVisible(true);
+                    }
 
+                    String msg = m.manageItemStorage(iid, amount);
+                    if (msg.equals("Invalid amount!")){
+                        NotificationUI notificationUI = new NotificationUI("invalid amount!");
+                        notificationUI.setVisible(true);
+                    } else if(msg.equals("failed")){
+                        NotificationUI notificationUI = new NotificationUI("update failed!");
+                        notificationUI.setVisible(true);
+                    } else {
+                        NotificationUI notificationUI = new NotificationUI("update succeed!");
+                        notificationUI.setVisible(true);
+                    }
                 }
             }
         }

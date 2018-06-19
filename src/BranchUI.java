@@ -81,7 +81,7 @@ class BranchUI extends JFrame{
             } else if (source == manager) {
 //                System.out.print("hi manager");
                 ManagerUI managerUI = new ManagerUI();
-                managerUI.setVisible(true);
+               // managerUI.setVisible(true);
             }
             setVisible(false);
             dispose();

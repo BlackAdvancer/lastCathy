@@ -8,7 +8,7 @@ class ManagerUI extends JFrame {
 
     Manager manager;
     private final int WIDTH = 500, HEIGHT = 90;
-    int managerID;
+    public int managerID;
     ManagerUI() {
         setSize(WIDTH, HEIGHT);
         setTitle("ManagerUI");
@@ -58,7 +58,7 @@ class ManagerUI extends JFrame {
     private void drawNorthPanel() {
         northPanel = new JPanel();
         northPanel.setLayout(new GridLayout(1, 3));
-        friendly = new JLabel("Employee ID: ");
+        friendly = new JLabel("Manager ID: ");
         northPanel.add(friendly);
         displayID = new JLabel(managerID+"");
         displayID.setForeground(Color.BLUE);
@@ -107,7 +107,7 @@ class ManagerUI extends JFrame {
     }
 
     private void logOut() {
-        LoginUI loginUI = new LoginUI(this, "Employee", manager);
+        LoginUI loginUI = new LoginUI(this, "Manager", manager);
         loginUI.setVisible(true);
         setVisible(false);
     }

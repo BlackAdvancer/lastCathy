@@ -2,19 +2,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 @SuppressWarnings("serial")
 class CustomerUI extends JFrame {
-
+    Member customer;
     private final int WIDTH = 250, HEIGHT = 130;
     CustomerUI() {
         setSize(WIDTH, HEIGHT);
         setTitle("Member");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        customer = new Member();
         draw();
     }
-
     private JLabel friendly, value;
     private JTextField memberID;
     private JButton checkout, quit;
@@ -23,7 +22,7 @@ class CustomerUI extends JFrame {
         setLayout(new BorderLayout());
         north = new JPanel();
         north.setLayout(new BorderLayout());
-        friendly = new JLabel("Your available points are...", SwingConstants.CENTER);
+        friendly = new JLabel("Enter your member iD", SwingConstants.CENTER);
         friendly.setForeground(Color.BLUE);
         north.add(friendly, BorderLayout.NORTH);
         memberID = new JTextField();
@@ -41,7 +40,6 @@ class CustomerUI extends JFrame {
         add(value, BorderLayout.CENTER);
         add(quit, BorderLayout.SOUTH);
     }
-
     private class buttonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -53,9 +51,15 @@ class CustomerUI extends JFrame {
                 dispose();
             } else if (source == checkout) {
                 // todo if successful
-                // todo extraction happens
-                int membershipPoints = 1111;
-                value.setText(membershipPoints+"");
+                int memberid = Integer.parseInt(memberID.getText());
+                if(customer.validateID(memberid)) {
+                    // todo extraction happens
+                    int membershipPoints = customer.checkPoint();
+                    value.setText(membershipPoints+"");
+                } else {
+                    NotificationUI notificationUI = new NotificationUI("invalid Member id");
+                    notificationUI.setVisible(true);
+                }
             }
             repaint();
         }
