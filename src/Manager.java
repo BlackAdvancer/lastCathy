@@ -486,7 +486,7 @@ public class Manager extends controller {
     public void addItemToDeal(int itemId, String dealName, double percent) throws FormattingException{
         try {
             if(!searchItem(itemId)) throw new FormattingException("Item not Found");
-            if(searchDeal(dealName)) throw new FormattingException("Deal Name not Found");
+            if(!searchDeal(dealName)) throw new FormattingException("Deal Name not Found");
             PreparedStatement ps = con.prepareStatement("INSERT INTO ItemsInDeal VALUES (?,?,?)");
             ps.setInt(1, itemId);
             ps.setString(2, dealName);
@@ -730,11 +730,8 @@ public class Manager extends controller {
         // xx-xx-xx
         int[] array = new int[3];
         array[0] = Integer.parseInt(time.substring(0,2))+2000-1900;
-        System.out.print(array[0]);
         array[1] = Integer.parseInt(time.substring(3, 5));
-        System.out.print(array[1]);
         array[2] = Integer.parseInt(time.substring(6, 8));
-        System.out.print(array[2]);
         return array;
     }
 

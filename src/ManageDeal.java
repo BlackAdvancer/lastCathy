@@ -174,6 +174,8 @@ public class ManageDeal extends JFrame {
                     } else if (source == modify) {
                         manager.modifyDealDuration(name, start, end);
                     }
+                    area.setText("");
+                    manager.showAllDeals();
                 } catch (FormattingException f) {
                     NotificationUI error = new NotificationUI(f.getMessage());
                     error.setVisible(true);
@@ -257,6 +259,8 @@ public class ManageDeal extends JFrame {
                     } else if (source == modify) {
 
                     }
+                    area.setText("");
+                    manager.showAllDeals();
                 } catch (FormattingException f) {
                     NotificationUI error = new NotificationUI(f.getMessage());
                     error.setVisible(true);
