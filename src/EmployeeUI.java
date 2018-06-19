@@ -15,6 +15,8 @@ class EmployeeUI extends JFrame {
         setVisible(false);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         draw();
          this.employee = new Employee();
         LoginUI loginUI = new LoginUI(this, "Employee", employee);
@@ -56,6 +58,7 @@ class EmployeeUI extends JFrame {
         logOut = new JButton("Log Out");
         logOut.addActionListener(handler);
         northPanel.add(logOut);
+
     }
     private void logOut() {
 

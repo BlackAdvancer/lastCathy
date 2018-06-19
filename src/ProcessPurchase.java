@@ -23,6 +23,8 @@ public class ProcessPurchase extends JFrame {
         this.setTitle("Task: Process Purchase");
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         totalPrice = 0;
         itemId = 0;
         lastItem = new Stack<Integer>();
@@ -44,7 +46,7 @@ public class ProcessPurchase extends JFrame {
         add(tablePanel, BorderLayout.CENTER);
     }
 
-    private JButton add, delete, deleteLast;
+    private JButton add, delete, deleteLast, quit, finish;
     private JTextField textField;
     private void drawProcessPanel() {
         processPanel = new JPanel();
@@ -58,12 +60,19 @@ public class ProcessPurchase extends JFrame {
         delete.addActionListener(handler);
         deleteLast = new JButton("Delete Last Item");
         deleteLast.addActionListener(handler);
+        quit = new JButton("Quit");
+        quit.addActionListener(handler);
+        finish = new JButton("Purchase done");
+        finish.addActionListener(handler);
 
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(1, 3));
+        buttons.setLayout(new GridLayout(2, 3));
         buttons.add(add);
         buttons.add(delete);
         buttons.add(deleteLast);
+        buttons.add(finish);
+        buttons.add(quit);
+        buttons.add(new JButton());
         processPanel.add(buttons, BorderLayout.SOUTH);
     }
 
@@ -71,14 +80,18 @@ public class ProcessPurchase extends JFrame {
     private void drawTablePanel() {
 
         area = new JTextArea();
-        area.setBackground(Color.black);
-        area.setForeground(Color.WHITE);
+        area.setBackground(Color.WHITE);
+        area.setForeground(Color.BLACK);
         tablePanel = new JScrollPane(area);
         PrintStream out = new PrintStream( new TextAreaOutputStream( area ) );
         System.setOut( out );
         System.setErr( out );
-        employee.showPurchase(receiptNumber, totalPrice);
-
+        try {
+            employee.showPurchase(receiptNumber, totalPrice);
+        }catch (SQLException e){
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
+        }
     }
 
 
@@ -110,6 +123,14 @@ public class ProcessPurchase extends JFrame {
                         area.setText("");
                         employee.showPurchase(receiptNumber, totalPrice);
                     }
+                } else if (source == finish){
+                    employee.purchaseFinish(receiptNumber, totalPrice);
+                    NotificationUI error = new NotificationUI("Thank You");
+                    setVisible(false);
+                    error.setVisible(true);
+                } else if (source == quit){
+                    employee.purchaseQuit(receiptNumber);
+                    setVisible(false);
                 }
             }catch (SQLException ex){
                 NotificationUI error = new NotificationUI(ex.getMessage());
