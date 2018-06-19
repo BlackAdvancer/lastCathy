@@ -568,7 +568,7 @@ public class Manager extends controller {
         try {
             stmt = con.createStatement();
 
-            rs = stmt.executeQuery("SELECT d.dealName AS dealName, d.duration as duration, id.itemId as itemId, id.percentage as persentage FROM Deal d, ItemsInDeal id WHERE d.dealName = id.dealName");
+            rs = stmt.executeQuery("SELECT d.dealName AS dealName, d.STARTDATE as startdate, d.ENDDATE as enddate, id.itemId as itemId, id.percentage as persentage FROM Deal d, ItemsInDeal id WHERE d.dealName = id.dealName");
             // get info on ResultSet
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
@@ -588,8 +588,10 @@ public class Manager extends controller {
                 System.out.printf("%-10.10s", itemID);
                 dealName = rs.getString("dealName");
                 System.out.printf("%-20.20s", dealName);
-                duration = rs.getString("duration");
-                System.out.printf("%-20.20s", duration);
+                Timestamp startdate = rs.getTimestamp("startdate");
+                System.out.printf("%-20.20s", startdate);
+                Timestamp enddate = rs.getTimestamp("enddate");
+                System.out.printf("%-20.20s", enddate);
                 percentage = rs.getDouble("persentage");
                 System.out.printf("%-15.15s\n", percentage);
             }
