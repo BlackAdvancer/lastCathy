@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.*;
 import java.util.Random;
 
@@ -10,11 +11,12 @@ public class Employee extends controller {
         PreparedStatement ps;
         ResultSet rs;
         int id = 0;
+        int point;
         boolean current = false;
         Random r = new Random();
         try {
             while (!current) {
-                id = r.nextInt(1000);
+                id = r.nextInt(1000) + 100000;
                 ps = con.prepareStatement("SELECT * FROM MemberShip WHERE memberID = ?");
                 ps.setInt(1, id);
                 rs = ps.executeQuery();
@@ -39,8 +41,14 @@ public class Employee extends controller {
     }
 
     public int processPurchase() {
+        int itemid;
+        int lastItem = 0;
+        double[] price_id = {0,0};
+        double price;
+        double totalPrice = 0;
         int receiptNumber = 0;
         boolean current = false;
+        boolean finish = false;
         PreparedStatement ps;
         ResultSet rs;
         Random r = new Random();
@@ -72,8 +80,9 @@ public class Employee extends controller {
             System.exit(-1);
         }
         return  receiptNumber;
-    }
 
+    }
+//
     public boolean validateID(int eid) {
         PreparedStatement ps;
         ResultSet rs;
@@ -99,22 +108,22 @@ public class Employee extends controller {
             catch (SQLException ex2)
             {
                 NotificationUI error2 = new NotificationUI(ex2.getMessage());
-                error2.setVisible(true);
-                System.exit(-1);
+                error.setVisible(true);
             }
         }
         return true;
     }
 
-    public void showPurchase(int receiptNumber, double totalPrice) {
+    public void showPurchase(int receiptNumber, double totalPrice) throws SQLException {
         String     itemID;
         String     itemName;
         double    itemPrice;
-        int itemAmount;
+        int itemAmount = 0;
         String     itemType;
         PreparedStatement  ps;
         ResultSet  rs;
-        System.out.print("Items:");
+        System.out.println("Clerk ID : " + id +"      Branch Number: " + branch + "      Time: " + new Timestamp(System.currentTimeMillis()) );
+        System.out.print("Items:  ");
         try {
             ps = con.prepareStatement("SELECT * FROM Item i, ItemsInPurchase ip WHERE ip.receiptNumber = ? and i.itemID = ip.itemID");
             ps.setInt(1, receiptNumber);
@@ -134,19 +143,19 @@ public class Employee extends controller {
             while (rs.next()) {
 
                 itemID = rs.getString("itemID");
-                System.out.printf("%-10.10s", itemID);
+                System.out.printf("%-10s", itemID);
 
                 itemName = rs.getString("name");
-                System.out.printf("%-30.30s", itemName);
+                System.out.printf("%-30s", itemName);
 
                 itemPrice = rs.getDouble("price");
-                System.out.printf("%-15.20s", itemPrice);
+                System.out.printf("%-10s", itemPrice);
 
                 itemType = rs.getString("type");
-                System.out.printf("%-20.15s", itemType);
+                System.out.printf("%-20s", itemType);
 
                 itemAmount = rs.getInt("amount");
-                System.out.printf("%-15.15s\n", itemAmount);
+                System.out.printf("%-15s\n", itemAmount);
 
             }
             ps.close();
@@ -217,7 +226,8 @@ public class Employee extends controller {
             ps.setInt(2,receiptNumber);
             ps.executeUpdate();
 
-        } else {
+        }
+        else {
             ps = con.prepareStatement("UPDATE itemsInPurchase SET amount = ? WHERE itemID = ? AND receiptNumber = ?");
             ps.setInt(3, receiptNumber);
             ps.setInt(2, lastItem);
@@ -246,8 +256,10 @@ public class Employee extends controller {
         ps.setInt(1,itemId);
         ps.setInt(2,receiptNumber);
         rs = ps.executeQuery();
-        if(!rs.next())
+        if(!rs.next()) {
             vaildItem = false;
+            price = 0;
+        }
         if(vaildItem)
             deleteLastItem(itemId,receiptNumber);
         else {
@@ -270,11 +282,42 @@ public class Employee extends controller {
 
     public void purchaseFinish(int receiptNumber, double totalPrice) throws SQLException{
         PreparedStatement ps;
+        ResultSet  rs;
+        ResultSet  rs1;
         ps = con.prepareStatement("UPDATE Purchase SET totalPrice = ? WHERE receiptNumber = ?");
         ps.setDouble(1,totalPrice);
         ps.setInt(2,receiptNumber);
         ps.executeUpdate();
-        System.out.println("\nPurchase finished");
+        ps = con.prepareStatement("SELECT * FROM Item i, ItemsInPurchase ip WHERE ip.receiptNumber = ? and i.itemID = ip.itemID");
+        ps.setInt(1, receiptNumber);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            int itemID = rs.getInt("itemID");
+            int itemAmount = rs.getInt("amount");
+            updateStorage(itemID,itemAmount);
+        }
+        ps.close();
     }
+
+    private void updateStorage(int itemID, int amount) throws SQLException{
+        PreparedStatement ps;
+        ResultSet  rs;
+        int totalamount;
+        ps = con.prepareStatement("SELECT * FROM Storage WHERE itemID = ? AND branchNumber = ?");
+        ps.setInt(1, itemID);
+        ps.setInt(2, branch);
+        rs = ps.executeQuery();
+        rs.next();
+        totalamount = rs.getInt("amount");
+        ps = con.prepareStatement("UPDATE Storage SET amount = ? WHERE itemID = ? AND branchNumber = ?");
+        ps.setInt(2, itemID);
+        ps.setInt(3, branch);
+        ps.setInt(1, totalamount - amount);
+        ps.executeQuery();
+        con.commit();
+        ps.close();
+
+    }
+
 
 }

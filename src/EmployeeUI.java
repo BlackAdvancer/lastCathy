@@ -23,6 +23,11 @@ class EmployeeUI extends JFrame {
         loginUI.setVisible(true);
     }
 
+//    EmployeeUI(Employee employee) {
+//        this();
+//        this.employee = employee;
+//    }
+
     private JPanel buttonsPanel, northPanel;
     private buttonHandler handler;
     public void draw() {
