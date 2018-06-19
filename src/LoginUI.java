@@ -47,10 +47,14 @@ class LoginUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if (source == logIn) {
+                if (!Constraints.ifIDFormatCorrect(id_field.getText())) {
+                    NotificationUI error = new NotificationUI("Empty Field");
+                    error.setVisible(true);
+                    return;
+                }
                 int id = Integer.parseInt(id_field.getText());
                 if (character.equals("Employee")) {
                     EmployeeUI ui = (EmployeeUI) object;
-//                    !ui.employee.validateID(id)
                     Employee employee = (Employee) controller;
                     if (!employee.validateID(id)) {
                         NotificationUI notificationUI = new NotificationUI("invalid id");
@@ -64,9 +68,7 @@ class LoginUI extends JFrame {
                         dispose();
                     }
                 } else if (character.equals("Manager")) {
-                    // todo
                     ManagerUI ui = (ManagerUI) object;
-//                    !ui.employee.validateID(id)
                     Manager manager = (Manager) controller;
                     if (!manager.validateID(id)) {
                         NotificationUI notificationUI = new NotificationUI("invalid id");

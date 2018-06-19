@@ -73,18 +73,13 @@ public class AddMembership extends JFrame {
                     String phoneNumber = ta_phoneNumber.getText();
                     if (Constraints.ifNameFormattingWrong(name)) throw new FormattingException("Wrong Name Format");
                     if (Constraints.ifPhoneFormatWrong(phoneNumber)) throw new FormattingException("Wrong Phone Number Format");
-                    // todo if membership is valid
-//                    Member member = new Member();
-//                    if (member)
-                    int membershipID =  employee.manageMemberShip(name, phoneNumber);;
-                    // todo add membership
+                    int membershipID =  employee.manageMemberShip(name, phoneNumber);
                     NotificationUI ui = new NotificationUI("Member "+ta_name.getText()+" is added!",
                             "Membership# is "+membershipID, "Congratulations");
                     ui.setVisible(true);
                 } catch (FormattingException f) {
                     f.printError();
                 }
-                // todo add member to database
                 ta_name.setText("");
                 ta_phoneNumber.setText("");
             }

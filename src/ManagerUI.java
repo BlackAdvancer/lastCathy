@@ -15,6 +15,8 @@ class ManagerUI extends JFrame {
         setVisible(false);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         draw();
         this.manager = new Manager();
         LoginUI loginUI = new LoginUI(this, "Manager", manager);
@@ -113,17 +115,17 @@ class ManagerUI extends JFrame {
     }
 
     private void manageEmployee() {
-        employees = new ManageEmployee();
+        employees = new ManageEmployee(manager);
         employees.setVisible(true);
     }
 
     private void manageDeal() {
-        deals = new ManageDeal();
+        deals = new ManageDeal(manager);
         deals.setVisible(true);
     }
 
     private void manageItem() {
-        items = new ManageItem();
+        items = new ManageItem(manager);
         items.setVisible(true);
     }
 }

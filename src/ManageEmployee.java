@@ -2,16 +2,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.sql.SQLException;
 
 @SuppressWarnings("Serial")
 public class ManageEmployee extends JFrame {
 
-    private final int WIDTH = 400, HEIGHT = 700;
-    public ManageEmployee() {
+    private final int WIDTH = 700, HEIGHT = 700;
+    private Manager manager;
+    public ManageEmployee(Manager manager) {
         setSize(WIDTH, HEIGHT);
         setTitle("Task: Manage Employee");
         setResizable(false);
+        this.manager = manager;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         draw();
     }
 
@@ -23,6 +30,23 @@ public class ManageEmployee extends JFrame {
         handler = new buttonHandler();
         drawProcessPanel();
         add(processPanel, BorderLayout.SOUTH);
+        drawMainPanel();
+        add(tablePanel, BorderLayout.CENTER);
+    }
+
+    private JTextArea area;
+    private void drawMainPanel() {
+        area = new JTextArea();
+        tablePanel = new JScrollPane(area);
+        PrintStream out = new PrintStream(new TextAreaOutputStream(area));
+        System.setOut(out);
+        System.setErr(out);
+        try {
+            manager.showAllEmployees();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
     }
 
     private JButton changeWage;
@@ -57,8 +81,27 @@ public class ManageEmployee extends JFrame {
         // todo
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
-            if (source == changeWage) {
-//                if ()
+            try {
+                if (source == changeWage) {
+                    String id = tf_employeeID.getText();
+                    String wage = tf_wage.getText();
+                    if (!Constraints.ifIDFormatCorrect(id))
+                        throw new FormattingException("Invalid Entry");
+                    if (!Constraints.ifIDFormatCorrect(wage))
+                        throw new FormattingException("Invalid Entry");
+                    area.setText("");
+                    manager.manageEmployeeWage(Integer.parseInt(id), Integer.parseInt(wage));
+                    manager.showAllEmployees();
+                }
+            } catch (FormattingException f) {
+                NotificationUI ui = new NotificationUI(f.getMessage());
+                ui.setVisible(true);
+            } catch (IOException i) {
+                NotificationUI ui = new NotificationUI(i.getMessage());
+                ui.setVisible(true);
+            } catch (SQLException s) {
+                NotificationUI ui = new NotificationUI(s.getMessage());
+                ui.setVisible(true);
             }
         }
     }

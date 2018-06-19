@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.sql.*;
 import java.util.Random;
 
@@ -11,7 +10,6 @@ public class Employee extends controller {
         PreparedStatement ps;
         ResultSet rs;
         int id = 0;
-        int point;
         boolean current = false;
         Random r = new Random();
         try {
@@ -41,14 +39,8 @@ public class Employee extends controller {
     }
 
     public int processPurchase() {
-        int itemid;
-        int lastItem = 0;
-        double[] price_id = {0,0};
-        double price;
-        double totalPrice = 0;
         int receiptNumber = 0;
         boolean current = false;
-        boolean finish = false;
         PreparedStatement ps;
         ResultSet rs;
         Random r = new Random();
@@ -80,33 +72,8 @@ public class Employee extends controller {
             System.exit(-1);
         }
         return  receiptNumber;
-        /*
-        while(!finish) {
-            showPurchase(receiptNumber, totalPrice);
-            System.out.print("\n press 0 to quit");
-            System.out.print("\n press 1 to delete item");
-            System.out.print("\n press 2 to finish the purchase");
-            System.out.print("\nplease Enter item ID: ");
-            itemid = Integer.parseInt(in.readLine());
-
-            if(itemid ==0 )
-                purchaseQuit(receiptNumber);//do nothing
-            else if(itemid == 1)
-                totalPrice -= deleteItem(lastItem, receiptNumber, price_id[0]);
-            else if(itemid == 2) {
-                purchaseFinish(receiptNumber,totalPrice);
-                finish = true;
-            }
-            else {
-                price_id = addItem(itemid, receiptNumber);
-                totalPrice += price_id[0];
-                lastItem = (int)price_id[1];
-            }
-        }
-        */
-
     }
-//
+
     public boolean validateID(int eid) {
         PreparedStatement ps;
         ResultSet rs;
@@ -132,18 +99,18 @@ public class Employee extends controller {
             catch (SQLException ex2)
             {
                 NotificationUI error2 = new NotificationUI(ex2.getMessage());
-                error.setVisible(true);
+                error2.setVisible(true);
                 System.exit(-1);
             }
         }
         return true;
     }
 
-    public void showPurchase(int receiptNumber, double totalPrice) throws SQLException {
+    public void showPurchase(int receiptNumber, double totalPrice) {
         String     itemID;
         String     itemName;
         double    itemPrice;
-        int itemAmount = 0;
+        int itemAmount;
         String     itemType;
         PreparedStatement  ps;
         ResultSet  rs;
@@ -250,8 +217,7 @@ public class Employee extends controller {
             ps.setInt(2,receiptNumber);
             ps.executeUpdate();
 
-        }
-        else {
+        } else {
             ps = con.prepareStatement("UPDATE itemsInPurchase SET amount = ? WHERE itemID = ? AND receiptNumber = ?");
             ps.setInt(3, receiptNumber);
             ps.setInt(2, lastItem);
@@ -310,6 +276,5 @@ public class Employee extends controller {
         ps.executeUpdate();
         System.out.println("\nPurchase finished");
     }
-
 
 }

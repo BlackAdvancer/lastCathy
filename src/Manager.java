@@ -1,10 +1,10 @@
 // We need to import the java.sql package to use JDBC
 
+import java.io.IOException;
 import java.sql.*;
+import java.util.Random;
 
 // for reading from the command line
-import java.io.*;
-import java.util.*;
 
 public class Manager extends controller {
 
@@ -13,45 +13,33 @@ public class Manager extends controller {
 
     public boolean validateID(int input) {
         int id;
-        boolean quit = false;
         ResultSet rs;
         PreparedStatement ps;
-
-        //System.out.println(connect("ora_a1q1b", "a24581167"));
         try {
-            //System.out.print("\n\nPlease enter your manager id or press enter 0 to quit: \n");
             id = input;
             String connectURL = "jdbc:oracle:thin:@dbhost.ugrad.cs.ubc.ca:1522:ug";
             con = DriverManager.getConnection(connectURL, "ora_a1q1b", "a24581167");
             ps = con.prepareStatement("SELECT * FROM Clerk WHERE clerkID = ? AND type = 'Manager'");
             ps.setInt(1, id);
-
             rs = ps.executeQuery();
-
+            boolean success = true;
             if (rs.next()) {
-                System.out.print("Access granted: Welcome.");
                 managerID = id;
                 branch = rs.getInt("branchNumber");
-                //showMenu();
                 ps.close();
-                return true;
-
             } else {
                 ps.close();
                 return false;
             }
-
-            // close the statement;
-            // the ResultSet will also be closed
-
+            return success;
         } catch (SQLException ex) {
-            System.out.println("Message: " + ex.getMessage());
-
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
             try {
                 con.rollback();
             } catch (SQLException ex2) {
-                System.out.println("Message: " + ex2.getMessage());
-                System.exit(-1);
+                NotificationUI error2 = new NotificationUI(ex2.getMessage());
+                error2.setVisible(true);
             }
             return false;
         }
@@ -80,7 +68,7 @@ public class Manager extends controller {
                     showAllEmployees();
                     break;
                 case 2:
-                    manageEmployeeWage();
+//                    manageEmployeeWage();
                     break;
                 case 3:
                     manageItem();
@@ -107,38 +95,30 @@ public class Manager extends controller {
 
     }
 
-    private void manageEmployeeWage() throws IOException, SQLException {
-        int id;
-        int wage;
+    public void manageEmployeeWage(int employeeID, int wage) throws SQLException {
         PreparedStatement ps;
-
-        ps = con.prepareStatement("UPDATE Clerk SET wage = ? WHERE clerkID = ?");
-
-        System.out.print("\nClerk ID: ");
-        id = Integer.parseInt(in.readLine());
-        ps.setInt(2, id);
-
-        showEmployee(id);
-
-        System.out.print("\nSet new wage: ");
-        wage = Integer.parseInt(in.readLine());
-        while (wage < 0) {
-            System.out.print("\nWage cannot be negative, please try again: ");
-            wage = Integer.parseInt(in.readLine());
+        ps = con.prepareStatement("UPDATE Clerk SET wage = ? WHERE clerkID = ? AND branchNumber = ?");
+        ps.setInt(2, employeeID);
+        ps.setInt(3, branch);
+        try {
+            if (wage < 0) {
+                throw new FormattingException("Wage Cannot be Negative");
+            }
+            ps.setInt(1, wage);
+            int rowCount = ps.executeUpdate();
+            if (rowCount == 0) {
+                throw new FormattingException("invalid id");
+            }
+            con.commit();
+        } catch (FormattingException f) {
+            NotificationUI error = new NotificationUI(f.getMessage());
+            error.setVisible(true);
+            ps.close();
         }
-        ps.setInt(1, wage);
-
-        int rowCount = ps.executeUpdate();
-        if (rowCount == 0) {
-            System.out.println("\nEmployee " + id + " does not exist!");
-        }
-
-        con.commit();
-
         ps.close();
     }
 
-    private void showEmployee(int id) throws IOException, SQLException {
+    private void showEmployee(int id) throws SQLException {
         int clerkID = id;
         String name;
         String type;
@@ -186,7 +166,7 @@ public class Manager extends controller {
         }
     }
 
-    private void showAllEmployees() throws SQLException {
+    public void showAllEmployees() throws SQLException {
         int clerkID;
         String name;
         String type;
@@ -256,7 +236,7 @@ public class Manager extends controller {
                     //manageItemStorage();
                     break;
                 case 2:
-                    manageItemPrice();
+//                    manageItemPrice();
                     break;
                 case 3:
                     showMenu();
@@ -264,63 +244,37 @@ public class Manager extends controller {
         }
     }
 
-    public String manageItemStorage(int id, int amount) {
-        try {
-            PreparedStatement ps;
-
-            ps = con.prepareStatement("UPDATE Storage SET amount = ? WHERE itemID = ? AND branchNumber = ?");
-            System.out.print("\nItem ID: ");
-
-            ps.setInt(2, id);
-            ps.setInt(3, branch);
-            displayItemInfo(id);
-            System.out.print("\nSet new storage amount: ");
-            if (amount < 0) {
-                return "Invalid amount!";
-//                System.out.print("\nStorage cannot be negative, please try again: ");
-//                amount = Integer.parseInt(in.readLine());
-            }
-            ps.setInt(1, amount);
-
-            int rowCount = ps.executeUpdate();
-            if (rowCount == 0) {
-                System.out.println("\nStorage of item ID " + id + " does not exist in your branch!");
-                return "failed";
-            }
-            con.commit();
-        } catch (SQLException se) {
-            System.out.println("sql exception");
-            return "failed";
-        }
-        return "succeed!";
-
-    }
-
-    private void manageItemPrice() throws IOException, SQLException {
-        int id;
-        double price;
+    public boolean manageItemStorage(int id, int amount) throws SQLException{
         PreparedStatement ps;
-
-        ps = con.prepareStatement("UPDATE Item SET price = ? WHERE itemID = ? AND branchNumber = ?");
-        System.out.print("\nItem ID: ");
-        id = Integer.parseInt(in.readLine());
-
+        ps = con.prepareStatement("UPDATE Storage SET amount = ? WHERE itemID = ? AND branchNumber = ?");
         ps.setInt(2, id);
         ps.setInt(3, branch);
-        displayItemInfo(id);
-        System.out.print("\nSet new storage price: ");
-        price = Double.parseDouble(in.readLine());
-        while (price < 0) {
-            System.out.print("\nStorage cannot be negative, please try again: ");
-            price = Double.parseDouble(in.readLine());
-        }
-        ps.setDouble(1, price);
+        ps.setInt(1, amount);
 
         int rowCount = ps.executeUpdate();
         if (rowCount == 0) {
-            System.out.println("\nStorage of item ID " + id + " does not exist in your branch!");
+            ps.close();
+            return false;
+        }
+        ps.close();
+        con.commit();
+        return true;
+    }
+
+    public void manageItemPrice(int id, double price) throws FormattingException, SQLException {
+        PreparedStatement ps;
+        ps = con.prepareStatement("UPDATE Item A SET A.price = ? WHERE A.itemID = (SELECT S.itemID FROM Storage S WHERE A.itemID = S.itemID AND S.itemID = ? AND S.branchNumber = ?)");
+        ps.setInt(2, id);
+        ps.setInt(3, branch);
+        if (price < 0) throw new FormattingException("Invalid price");
+        ps.setDouble(1, price);
+        int rowCount = ps.executeUpdate();
+        if (rowCount == 0) {
+            ps.close();
+            throw new FormattingException("Branch does not have item");
         }
         con.commit();
+        ps.close();
     }
 
     private void displayItemInfo(int id) throws SQLException {
@@ -365,6 +319,40 @@ public class Manager extends controller {
             type = rs.getString("type");
             System.out.printf("%-5s", type);
         }
+    }
+
+    public void displayAllItems() throws SQLException {
+        String     itemID;
+        String     itemName;
+        String     itemPrice;
+        String     itemType;
+        Statement  stmt;
+        ResultSet  rs;
+
+        stmt = con.createStatement();
+        rs = stmt.executeQuery("SELECT * FROM Item");
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int numCols = rsmd.getColumnCount();
+        System.out.println(" ");
+        for (int i = 0; i < numCols; i++) {
+            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+        }
+        System.out.println(" ");
+        while(rs.next()) {
+            itemID = rs.getString("itemID");
+            System.out.printf("%-10.10s", itemID);
+
+            itemName = rs.getString("name");
+            System.out.printf("%-20.20s", itemName);
+
+            itemPrice = rs.getString("price");
+            System.out.printf("%-20.20s", itemPrice);
+
+            itemType = rs.getString("type");
+            System.out.printf("%-15.15s\n", itemType);
+
+        }
+        stmt.close();
     }
 
     private void manageMembership() {
@@ -425,7 +413,7 @@ public class Manager extends controller {
 
                 switch (choice) {
                     case 1:
-                        addNewDeal();
+//                        addNewDeal();
                         break;
                     case 2:
                         showAllDeals();
@@ -459,105 +447,87 @@ public class Manager extends controller {
 
                 switch (choice) {
                     case 1:
-                        addItemToDeal();
+//                        addItemToDeal();
                         break;
                     case 2:
-                        deleteDeal();
+//                        deleteDeal();
                         break;
                     case 3:
-                        deleteItemFromDeal();
+//                        deleteItemFromDeal();
                         break;
                     case 4:
                         //modifyDealName();
                         break;
                     case 5:
-                        modifyDealDuration();
+//                        modifyDealDuration();
                     case 6:
-                        modifyDealPercent();
+//                        modifyDealPercent();
                         break;
                 }
             }
         } catch (IOException e) {
             System.out.println("IOException!");
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-    private void deleteItemFromDeal() throws IOException, SQLException {
-        System.out.println("please enter itemID");
-        int itemId = searchItem();
-        System.out.println("please enter deal name");
-        String dealName = searchDeal();
+    public void deleteItemFromDeal(int itemId, String dealName) {
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM ItemsInDeal WHRER dealName = \'" + dealName + "\' AND itemID = ?");
+            PreparedStatement ps = con.prepareStatement("DELETE FROM ItemsInDeal WHERE dealName = \'" + dealName + "\' AND itemID = ?");
             ps.setInt(1, itemId);
             ps.executeUpdate();
             con.commit();
-            System.out.println("successed!");
         } catch (SQLException se) {
-            System.out.println("delete failed!\n back to menu");
+            NotificationUI error = new NotificationUI(se.getMessage());
+            error.setVisible(true);
         }
 
     }
 
-    private void addItemToDeal() throws IOException, SQLException {
-        System.out.println("\n please enter the itemID you want to add to deal ");
-        int itemID = searchItem();
-        System.out.println("please enter deal name ");
-        String dealName = searchDeal();
-        System.out.println("please enter percentage ");
-        double persent = Double.parseDouble(in.readLine());
-        PreparedStatement ps = con.prepareStatement("INSERT INTO ItemsInDeal VALUES (?,?,?)");
-        ps.setInt(1, itemID);
-        ps.setString(2, dealName);
-        ps.setDouble(3, persent);
-        ps.executeUpdate();
-        System.out.println("Success!!!");
-        con.commit();
-        ps.close();
+    public void addItemToDeal(int itemId, String dealName, double percent) throws FormattingException{
+        try {
+            if(!searchItem(itemId)) throw new FormattingException("Item not Found");
+            if(searchDeal(dealName)) throw new FormattingException("Deal Name not Found");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO ItemsInDeal VALUES (?,?,?)");
+            ps.setInt(1, itemId);
+            ps.setString(2, dealName);
+            ps.setDouble(3, percent);
+            ps.executeUpdate();
+            con.commit();
+            ps.close();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
     }
 
-    private int searchItem() throws IOException, SQLException {
-        boolean acc = false;
-        int itemID = 0;
-        while (!acc) {
-            System.out.print("ItemID: ");
-            itemID = Integer.parseInt(in.readLine());
+    private boolean searchItem(int itemId){
+        try {
             Statement s = con.createStatement();
-            ResultSet res = s.executeQuery("SELECT * FROM Item WHERE itemID = " + itemID);
-            if (!res.next()) {
-                System.out.println("no such item please try again! ");
-            } else {
-                acc = true;
-                return itemID;
-            }
+            ResultSet res = s.executeQuery("SELECT * FROM Item WHERE itemID = " + itemId);
+            if (!res.next())
+                return false;
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
         }
-        return itemID;
-
+        return true;
     }
 
-    private String searchDeal() throws IOException, SQLException {
-        boolean acc = false;
-        String dealName = null;
-        while (!acc) {
-            System.out.print("dealName: ");
-            dealName = in.readLine();
+    private boolean searchDeal(String dealName) {
+        try {
             PreparedStatement s = con.prepareStatement("SELECT * FROM Deal WHERE dealName = \'" + dealName + "\'");
-            //s.setString(1, dealName);
             ResultSet res = s.executeQuery();
-            if (!res.next()) {
-                System.out.println("no such deal please try again! ");
-            } else {
-                acc = true;
-                return dealName;
-            }
+            if (!res.next())
+                return false;
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
         }
-        return dealName;
+        return true;
 
     }
 
-    private void showAllDeals() {
+    public void showAllDeals() {
         String dealName;
         String duration;
         int itemID;
@@ -568,7 +538,7 @@ public class Manager extends controller {
         try {
             stmt = con.createStatement();
 
-            rs = stmt.executeQuery("SELECT d.dealName AS dealName, d.duration as duration, id.itemId as itemId, id.percentage as persentage FROM Deal d, ItemsInDeal id WHERE d.dealName = id.dealName");
+            rs = stmt.executeQuery("SELECT d.dealName AS dealName, d.STARTDATE as startdate, d.ENDDATE as enddate, id.itemId as itemId, id.percentage as persentage FROM Deal d, ItemsInDeal id WHERE d.dealName = id.dealName");
             // get info on ResultSet
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
@@ -588,8 +558,10 @@ public class Manager extends controller {
                 System.out.printf("%-10.10s", itemID);
                 dealName = rs.getString("dealName");
                 System.out.printf("%-20.20s", dealName);
-                duration = rs.getString("duration");
-                System.out.printf("%-20.20s", duration);
+                Timestamp startdate = rs.getTimestamp("startdate");
+                System.out.printf("%-20.20s", startdate);
+                Timestamp enddate = rs.getTimestamp("enddate");
+                System.out.printf("%-20.20s", enddate);
                 percentage = rs.getDouble("persentage");
                 System.out.printf("%-15.15s\n", percentage);
             }
@@ -599,97 +571,37 @@ public class Manager extends controller {
         } catch (SQLException ex) {
             System.out.println("Message: " + ex.getMessage());
         }
+
     }
 
-    private void addNewDeal() {
-        String dealName = null;
+    public void addNewDeal(String dealName, String start, String end) {
         Timestamp startDate;
         Timestamp endDate;
-
-        int itemID;
-        double percent;
-
         boolean canExit = false;
         PreparedStatement ps;
-
-        while (!canExit) {
+        try {
+            ps = con.prepareStatement("INSERT INTO Deal VALUES (?,?,?)");
+            ps.setString(1, dealName);
+            int[] timeStart = parseTimestamp(start);
+            int[] timeEnd = parseTimestamp(end);
+            startDate = new java.sql.Timestamp(timeStart[0], timeStart[1], timeStart[2], 0, 0, 0, 0);
+            endDate = new java.sql.Timestamp(timeEnd[0], timeEnd[1], timeEnd[2], 0, 0, 0, 0);
+            ps.setTimestamp(2, startDate);
+            ps.setTimestamp(3, endDate);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException ex) {
+            NotificationUI error = new NotificationUI(ex.getMessage());
+            error.setVisible(true);
             try {
-                ps = con.prepareStatement("INSERT INTO Deal VALUES (?,?,?)");
-                System.out.print("\nDeal name: ");
-                dealName = in.readLine();
-                ps.setString(1, dealName);
-                System.out.println("\nDuration ");
-                System.out.println("start date");
-                System.out.print("start Year:");
-                int startY = Integer.parseInt(in.readLine());
-                System.out.print("start month:");
-                int startM = Integer.parseInt(in.readLine());
-                System.out.print("start day:");
-                int startD = Integer.parseInt(in.readLine());
-                startDate = new Timestamp(startY, startM, startD, 0, 0, 0, 0);
-                System.out.print("end year:");
-                int endY = Integer.parseInt(in.readLine());
-                System.out.print("end month:");
-                int endM = Integer.parseInt(in.readLine());
-                System.out.print("end date:");
-                int endD = Integer.parseInt(in.readLine());
-                endDate = new Timestamp(endY, endM, endD, 0, 0, 0, 0);
-                ps.setTimestamp(2, startDate);
-                ps.setTimestamp(3, endDate);
-                ps.executeUpdate();
-                //  ps.close();
-            } catch (IOException e) {
-                System.out.println("IOException!");
-            } catch (SQLException ex) {
-                System.out.println("Message: " + ex.getMessage());
-                System.out.println("Insertion failed!");
-                try {
-                    // undo the insert
-                    con.rollback();
-                    System.exit(-1);
-                } catch (SQLException ex2) {
-                    System.out.println("Message: " + ex2.getMessage());
-                    System.exit(-1);
-                }
+                // undo the insert
+                con.rollback();
+                System.exit(-1);
+            } catch (SQLException ex2) {
+                NotificationUI error2 = new NotificationUI(ex2.getMessage());
+                error2.setVisible(true);
+                System.exit(-1);
             }
-
-            try {
-                System.out.println("Do you want to add item in this deal? enter Y for yes");
-                String ans = in.readLine();
-                if (ans.equals("Y") || ans.equals("y")) {
-                    System.out.print("please enter item id: ");
-                    itemID = Integer.parseInt(in.readLine());
-                    Statement s = con.createStatement();
-                    ResultSet res = s.executeQuery("SELECT * FROM Item WHERE itemID = " + itemID);
-                    if (!res.next()) {
-                        System.out.println("no such item please try again! ");
-                    } else {
-                        System.out.println("item found, please enter persentage");
-                        percent = Double.parseDouble(in.readLine());
-                        ps = con.prepareStatement("INSERT INTO ItemsInDeal VALUES (?,?,?)");
-                        ps.setInt(1, itemID);
-                        ps.setString(2, dealName);
-                        ps.setDouble(3, percent);
-                        ps.executeUpdate();
-                        ps.close();
-                    }
-//                    con.commit();
-                    s.close();
-                }
-                System.out.println("do you want to add another deal? enter Y for yes");
-                canExit = !in.readLine().equals("Y");
-            } catch (SQLException se) {
-                // TODO
-            } catch (IOException ie) {
-                System.out.println("IOException!");
-                try {
-                    con.close();
-                    System.exit(-1);
-                } catch (SQLException ex) {
-                    System.out.println("Message: " + ex.getMessage());
-                }
-            }
-
         }
     }
 
@@ -773,67 +685,57 @@ public class Manager extends controller {
         ps.close();
     }
 
-    private void deleteDeal() throws IOException, SQLException {
-        System.out.println("please enter the deal name you want to delete");
-        String dName = searchDeal();
-        Statement ps = con.createStatement();
-        ps.executeUpdate("DELETE FROM (SELECT * FROM Deal d WHERE d.dealName = \'" + dName + "\')");
-        con.commit();
-        System.out.println("delete successed!");
+    public void deleteDeal(String name) {
+        try {
+            Statement ps = con.createStatement();
+            ps.executeUpdate("DELETE FROM (SELECT * FROM Deal d WHERE d.dealName = \'" + name + "\')");
+            con.commit();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
     }
 
-    private void modifyDealPercent() throws IOException, SQLException {
-        System.out.print("please enter deal name");
-        String dealName = searchDeal();
-        System.out.println("plase enter item id");
-        int itemId = searchItem();
-        System.out.println("please enter new percentage");
-        double percent = Double.parseDouble(in.readLine());
+    public void modifyDealPercent(String name, int itemId, double percentage) {
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'" + dealName + "\'");
-            ps.setDouble(1, percent);
+            PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'" + name + "\'");
+            ps.setDouble(1, percentage);
             ps.setInt(2, itemId);
             ps.executeUpdate();
             con.commit();
-            System.out.println("successed!");
         } catch (SQLException se) {
             System.out.println("update failed!");
         }
 
     }
 
-    private void modifyDealDuration() throws IOException, SQLException {
-        System.out.println("enter the deal name you want to modify");
-        String dealName = searchDeal();
-        System.out.print("\nEnter starting year: ");
-        int inputYear = Integer.parseInt(in.readLine());
+    public void modifyDealDuration(String name, String start, String end) {
+        try {
+            int[] timeStart = parseTimestamp(start);
+            int[] timeEnd = parseTimestamp(end);
+            java.sql.Timestamp startDate = new java.sql.Timestamp(timeStart[0], timeStart[1], timeStart[2], 0, 0, 0, 0);
+            java.sql.Timestamp endDate = new java.sql.Timestamp(timeEnd[0], timeEnd[1], timeEnd[2], 0, 0, 0, 0);
+            PreparedStatement ps = con.prepareStatement("UPDATE Deal d SET d.startDate = ? AND d.endDate = ? WHERE d.dealName = \'" + name + "\'");
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            ps.executeUpdate();
+            con.commit();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
+    }
 
-        System.out.print("\nEnter starting Month: ");
-        int inputMonth = Integer.parseInt(in.readLine());
-
-        System.out.print("\nEnter starting Day: ");
-        int inputDay = Integer.parseInt(in.readLine());
-
-        java.sql.Timestamp startDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
-
-        System.out.print("\nEnter ending year: ");
-        inputYear = Integer.parseInt(in.readLine());
-
-        System.out.print("\nEnter ending Month: ");
-        inputMonth = Integer.parseInt(in.readLine());
-
-        System.out.print("\nEnter ending Day: ");
-        inputDay = Integer.parseInt(in.readLine());
-
-        java.sql.Timestamp endDate = new java.sql.Timestamp(inputYear, inputMonth, inputDay, 0, 0, 0, 0);
-        PreparedStatement ps = con.prepareStatement("UPDATE Deal d SET d.startDate = ? AND d.endDate = ? WHERE d.dealName = \'" + dealName + "\'");
-        ps.setTimestamp(1, startDate);
-        ps.setTimestamp(2, endDate);
-        ps.executeUpdate();
-        con.commit();
-        System.out.println("successed!");
-
-
+    public static int[] parseTimestamp(String time) {
+        // xx-xx-xx
+        int[] array = new int[3];
+        array[0] = Integer.parseInt(time.substring(0,2))+2000-1900;
+        System.out.print(array[0]);
+        array[1] = Integer.parseInt(time.substring(3, 5));
+        System.out.print(array[1]);
+        array[2] = Integer.parseInt(time.substring(6, 8));
+        System.out.print(array[2]);
+        return array;
     }
 
     private void getTotalTransactionAmount() throws SQLException, IOException {
