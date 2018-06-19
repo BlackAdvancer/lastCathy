@@ -15,9 +15,8 @@ public class ProcessPurchase extends JFrame {
     int itemId;
     Stack<Integer> lastItem;
     int receiptNumber;
-    String output;
 
-    private final int WIDTH = 400, HEIGHT = 700;
+    private final int WIDTH = 500, HEIGHT = 500;
     public ProcessPurchase(Employee employee) {
         this.setSize(WIDTH, HEIGHT);
         this.setTitle("Task: Process Purchase");
@@ -27,7 +26,7 @@ public class ProcessPurchase extends JFrame {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         totalPrice = 0;
         itemId = 0;
-        lastItem = new Stack<Integer>();
+        lastItem = new Stack<>();
         this.employee = employee;
         receiptNumber = employee.processPurchase();
         System.out.println(receiptNumber);
@@ -78,33 +77,23 @@ public class ProcessPurchase extends JFrame {
 
     JTextArea area;
     private void drawTablePanel() {
-
         area = new JTextArea();
         area.setBackground(Color.WHITE);
         area.setForeground(Color.BLACK);
         tablePanel = new JScrollPane(area);
         PrintStream out = new PrintStream( new TextAreaOutputStream( area ) );
         System.setOut( out );
-        //System.setErr( out );
-        try {
-            employee.showPurchase(receiptNumber, totalPrice);
-        }catch (SQLException e){
-            NotificationUI error = new NotificationUI(e.getMessage());
-            error.setVisible(true);
-        }
+        System.setErr( out );
+        employee.showPurchase(receiptNumber, totalPrice);
     }
 
 
     private class buttonHandler implements ActionListener {
         @Override
-        // todo
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             try {
                 if (source == add) {
-                    if(!Constraints.ifIDFormatCorrect(textField.getText()))
-                        throw  new FormattingException("Wrong ItemID Format");
-
                     itemId = Integer.parseInt(textField.getText());
                     price_id = employee.addItem(itemId, receiptNumber);
                     price = price_id[0];
@@ -113,8 +102,6 @@ public class ProcessPurchase extends JFrame {
                     area.setText("");
                     employee.showPurchase(receiptNumber, totalPrice);
                 } else if (source == delete) {
-                    if(!Constraints.ifIDFormatCorrect(textField.getText()))
-                        throw  new FormattingException("Wrong ItemID Format");
                     itemId = Integer.parseInt(textField.getText());
                     totalPrice -= employee.deleteItemHelper(itemId, receiptNumber);
                     area.setText("");
@@ -130,7 +117,7 @@ public class ProcessPurchase extends JFrame {
                     }
                 } else if (source == finish){
                     employee.purchaseFinish(receiptNumber, totalPrice);
-                    NotificationUI error = new NotificationUI("Thank You","Purchase complete", "Purchase done");
+                    NotificationUI error = new NotificationUI("Thank You", "", "complete");
                     setVisible(false);
                     error.setVisible(true);
                 } else if (source == quit){
@@ -140,8 +127,6 @@ public class ProcessPurchase extends JFrame {
             }catch (SQLException ex){
                 NotificationUI error = new NotificationUI(ex.getMessage());
                 error.setVisible(true);
-            }catch (FormattingException f){
-                f.printError();
             }
         }
     }

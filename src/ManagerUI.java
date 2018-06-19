@@ -41,6 +41,7 @@ class ManagerUI extends JFrame {
     }
 
     JButton manageItem, manageEmployee, manageDeal;
+    JButton getSalesRecord, getTotalTransactionAmount, getMinWage;
     private void drawButtons() {
         buttonsPanel = new JPanel();
         manageItem = new JButton("Manage Items");
@@ -49,10 +50,18 @@ class ManagerUI extends JFrame {
         manageEmployee.addActionListener(handler);
         manageDeal = new JButton("Manage Deal");
         manageDeal.addActionListener(handler);
-        buttonsPanel.setLayout(new GridLayout(1, 3));
+        buttonsPanel.setLayout(new GridLayout(2, 3));
+        getSalesRecord = new JButton("Get Sales Record");
+        getSalesRecord.addActionListener(handler);
+        getTotalTransactionAmount = new JButton("Get Total Transaction Amount");
+        getMinWage = new JButton("Get Min Wage Clerk");
+        getMinWage.addActionListener(handler);
         buttonsPanel.add(manageItem);
         buttonsPanel.add(manageEmployee);
         buttonsPanel.add(manageDeal);
+        buttonsPanel.add(getSalesRecord);
+        buttonsPanel.add(getTotalTransactionAmount);
+        buttonsPanel.add(getMinWage);
     }
 
     private JLabel friendly, displayID;
@@ -73,6 +82,9 @@ class ManagerUI extends JFrame {
     private ManageEmployee employees;
     private ManageItem items;
     private ManageDeal deals;
+    private GetSalesRecord salesRecord;
+    private GetTotalTransaction totalTransaction;
+    private GetMinWage minWage;
     private class buttonHandler implements ActionListener {
         @Override
         // todo
@@ -102,6 +114,30 @@ class ManagerUI extends JFrame {
                     deals.dispose();
                     deals = null;
                 }
+            } else if (source == getSalesRecord) {
+                if (getSalesRecord == null)
+                    getSalesRecord();
+                else {
+                    salesRecord.setVisible(false);
+                    salesRecord.dispose();
+                    salesRecord = null;
+                }
+            } else if (source == getTotalTransactionAmount) {
+                if (totalTransaction == null)
+                    getTotalTransactionAmount();
+                else {
+                    totalTransaction.setVisible(false);
+                    totalTransaction.dispose();
+                    totalTransaction = null;
+                }
+            } else if (source == getMinWage) {
+                if (minWage == null)
+                    getMinWage();
+                else {
+                    minWage.setVisible(false);
+                    minWage.dispose();
+                    minWage = null;
+                }
             } else if (source == logOut) {
                 logOut();
             }
@@ -127,5 +163,17 @@ class ManagerUI extends JFrame {
     private void manageItem() {
         items = new ManageItem(manager);
         items.setVisible(true);
+    }
+
+    private void getSalesRecord() {
+
+    }
+
+    private void getTotalTransactionAmount() {
+
+    }
+
+    private void getMinWage() {
+
     }
 }

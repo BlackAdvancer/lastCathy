@@ -174,8 +174,8 @@ public class ManageDeal extends JFrame {
                     } else if (source == modify) {
                         manager.modifyDealDuration(name, start, end);
                     }
-                    area.setText("");
-                    manager.showAllDeals();
+                    NotificationUI success = new NotificationUI("Success", "", "complete");
+                    success.setVisible(true);
                 } catch (FormattingException f) {
                     NotificationUI error = new NotificationUI(f.getMessage());
                     error.setVisible(true);
@@ -255,12 +255,12 @@ public class ManageDeal extends JFrame {
                     if (source == add) {
                         manager.addItemToDeal(itemId, dealName, discount);
                     } else if (source == delete) {
-
+                        manager.deleteItemFromDeal(itemId, dealName);
                     } else if (source == modify) {
-
+                        manager.modifyDealPercent(dealName, itemId, discount);
                     }
-                    area.setText("");
-                    manager.showAllDeals();
+                    NotificationUI success = new NotificationUI("Success", "", "complete");
+                    success.setVisible(true);
                 } catch (FormattingException f) {
                     NotificationUI error = new NotificationUI(f.getMessage());
                     error.setVisible(true);
