@@ -69,12 +69,11 @@ public class Employee extends controller {
         }catch (SQLException e){
             NotificationUI error = new NotificationUI(e.getMessage());
             error.setVisible(true);
-            System.exit(-1);
         }
         return  receiptNumber;
 
     }
-//
+
     public void validateID(int eid) throws FormattingException {
         PreparedStatement ps;
         ResultSet rs;

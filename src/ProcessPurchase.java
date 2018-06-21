@@ -25,10 +25,9 @@ public class ProcessPurchase extends JFrame {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         totalPrice = 0;
         itemId = 0;
-        lastItem = new Stack<Integer>();
+        lastItem = new Stack<>();
         this.employee = employee;
         receiptNumber = employee.processPurchase();
-        System.out.println(receiptNumber);
         this.draw();
     }
 
@@ -83,14 +82,13 @@ public class ProcessPurchase extends JFrame {
         tablePanel = new JScrollPane(area);
         PrintStream out = new PrintStream( new TextAreaOutputStream( area ) );
         System.setOut( out );
-        //System.setErr( out );
+        System.setErr( out );
         employee.showPurchase(receiptNumber, totalPrice);
     }
 
 
     private class buttonHandler implements ActionListener {
         @Override
-        // todo
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             try {
@@ -130,7 +128,8 @@ public class ProcessPurchase extends JFrame {
                     setVisible(false);
                 }
             } catch (FormattingException f){
-                f.printError();
+                NotificationUI error = new NotificationUI(f.getMessage());
+                error.setVisible(true);
             }
         }
     }

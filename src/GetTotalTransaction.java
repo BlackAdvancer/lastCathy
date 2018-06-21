@@ -22,9 +22,8 @@ public class GetTotalTransaction extends JFrame {
         setLayout(new BorderLayout());
         drawMainPanel();
         add(tablePanel, BorderLayout.CENTER);
-    }
 
-    // todo add button
+    }
 
     private JTextArea area;
     private void drawMainPanel() {
@@ -33,6 +32,7 @@ public class GetTotalTransaction extends JFrame {
         PrintStream out = new PrintStream(new TextAreaOutputStream(area));
         System.setOut(out);
         System.setErr(out);
-        manager.getTotalTransactionAmount("15-01-01", "18-06-18");
+        // todo
+        //manager.getTotalTransactionAmount();
     }
 }
