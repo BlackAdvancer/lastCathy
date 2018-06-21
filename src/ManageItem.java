@@ -8,7 +8,7 @@ import java.sql.SQLException;
 @SuppressWarnings("Serial")
 public class ManageItem extends JFrame {
 
-    private final int WIDTH = 400, HEIGHT = 700;
+    private final int WIDTH = 600, HEIGHT = 500;
     private Manager manager;
     public ManageItem(Manager manager) {
         setSize(WIDTH, HEIGHT);

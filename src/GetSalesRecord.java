@@ -10,7 +10,7 @@ public class GetSalesRecord extends JFrame {
     public GetSalesRecord(Manager manager) {
         setSize(WIDTH, HEIGHT);
         this.manager = manager;
-        setTitle("Task: GEt Sales Record");
+        setTitle("Task: Get Sales Record");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();

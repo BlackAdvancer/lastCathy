@@ -11,7 +11,6 @@ class LoginUI extends JFrame {
     Object object;
     private final int WIDTH = 200, HEIGHT = 90;
     public LoginUI(Object object, String character, controller obj) {
-        System.out.println("MFBUG5");
         this.character = character;
         this.controller = obj;
         this.object = object;
@@ -46,48 +45,39 @@ class LoginUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
-            if (source == logIn) {
-                if (!Constraints.ifIDFormatCorrect(id_field.getText())) {
-                    NotificationUI error = new NotificationUI("Empty Field");
-                    error.setVisible(true);
-                    return;
-                }
-                int id = Integer.parseInt(id_field.getText());
-                if (character.equals("Employee")) {
-                    EmployeeUI ui = (EmployeeUI) object;
-                    Employee employee = (Employee) controller;
-                    if (!employee.validateID(id)) {
-                        NotificationUI notificationUI = new NotificationUI("invalid id");
-                        notificationUI.setVisible(true);
-                    } else {
+            try {
+                if (source == logIn) {
+                    if (!Constraints.ifIDFormatCorrect(id_field.getText()))
+                        throw new FormattingException("invalid id format");
+                    int id = Integer.parseInt(id_field.getText());
+                    if (character.equals("Employee")) {
+                        EmployeeUI ui = (EmployeeUI) object;
+                        Employee employee = (Employee) controller;
+                        employee.validateID(id);
                         ui.employeeID = id;
-                        System.out.println(ui.employee.id);
                         ui.repaint();
                         ui.setVisible(true);
                         setVisible(false);
                         dispose();
-                    }
-                } else if (character.equals("Manager")) {
-                    ManagerUI ui = (ManagerUI) object;
-                    Manager manager = (Manager) controller;
-                    if (!manager.validateID(id)) {
-                        NotificationUI notificationUI = new NotificationUI("invalid id");
-                        notificationUI.setVisible(true);
-                    } else {
+                    } else if (character.equals("Manager")) {
+                        ManagerUI ui = (ManagerUI) object;
+                        Manager manager = (Manager) controller;
+                        manager.validateID(id);
                         ui.managerID = id;
-                        System.out.println(ui.manager.managerID);
                         ui.repaint();
                         ui.setVisible(true);
                         setVisible(false);
                         dispose();
                     }
-
+                } else if (source == quit) {
+                    BranchUI branchUI = new BranchUI();
+                    branchUI.setVisible(true);
+                    setVisible(false);
+                    dispose();
                 }
-            } else if (source == quit) {
-                BranchUI branchUI = new BranchUI();
-                branchUI.setVisible(true);
-                setVisible(false);
-                dispose();
+            } catch (FormattingException f) {
+                NotificationUI error = new NotificationUI(f.getMessage());
+                error.setVisible(true);
             }
         }
     }

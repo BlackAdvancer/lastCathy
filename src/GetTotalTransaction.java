@@ -24,6 +24,8 @@ public class GetTotalTransaction extends JFrame {
         add(tablePanel, BorderLayout.CENTER);
     }
 
+    // todo add button
+
     private JTextArea area;
     private void drawMainPanel() {
         area = new JTextArea();

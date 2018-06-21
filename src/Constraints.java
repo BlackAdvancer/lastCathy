@@ -10,12 +10,11 @@ public class Constraints {
     }
 
     public static boolean ifPhoneFormatWrong(String number) {
-        if (number.length() != 13) return true;
+        if (number.length() != 12) return true;
         if (number.charAt(3) != '-') return true;
-        if (number.charAt(6) != '-') return true;
-        if (number.charAt(9) != '-') return true;
+        if (number.charAt(7) != '-') return true;
         String newString = number.replace("-", "");
-        for (int i = 0; i < number.length(); i++)
+        for (int i = 0; i < newString.length(); i++)
             if (!Character.isDigit(newString.charAt(i)))
                 return true;
         return false;

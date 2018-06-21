@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 class ManagerUI extends JFrame {
 
     Manager manager;
-    private final int WIDTH = 500, HEIGHT = 90;
+    private final int WIDTH = 500, HEIGHT = 130;
     public int managerID;
     ManagerUI() {
         setSize(WIDTH, HEIGHT);
@@ -54,6 +54,7 @@ class ManagerUI extends JFrame {
         getSalesRecord = new JButton("Get Sales Record");
         getSalesRecord.addActionListener(handler);
         getTotalTransactionAmount = new JButton("Get Total Transaction Amount");
+        getTotalTransactionAmount.addActionListener(handler);
         getMinWage = new JButton("Get Min Wage Clerk");
         getMinWage.addActionListener(handler);
         buttonsPanel.add(manageItem);
@@ -87,7 +88,6 @@ class ManagerUI extends JFrame {
     private GetMinWage minWage;
     private class buttonHandler implements ActionListener {
         @Override
-        // todo
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if (source == manageItem) {
@@ -115,7 +115,7 @@ class ManagerUI extends JFrame {
                     deals = null;
                 }
             } else if (source == getSalesRecord) {
-                if (getSalesRecord == null)
+                if (salesRecord == null)
                     getSalesRecord();
                 else {
                     salesRecord.setVisible(false);
@@ -166,14 +166,17 @@ class ManagerUI extends JFrame {
     }
 
     private void getSalesRecord() {
-
+        salesRecord = new GetSalesRecord(manager);
+        salesRecord.setVisible(true);
     }
 
     private void getTotalTransactionAmount() {
-
+        totalTransaction = new GetTotalTransaction(manager);
+        totalTransaction.setVisible(true);
     }
 
     private void getMinWage() {
-
+        minWage = new GetMinWage(manager);
+        minWage.setVisible(true);
     }
 }

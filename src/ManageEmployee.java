@@ -42,7 +42,7 @@ public class ManageEmployee extends JFrame {
         System.setOut(out);
         System.setErr(out);
         try {
-            manager.showAllEmployees();
+            manager.displayAllEmployees();
         } catch (SQLException s) {
             NotificationUI error = new NotificationUI(s.getMessage());
             error.setVisible(true);
@@ -78,7 +78,6 @@ public class ManageEmployee extends JFrame {
 
     private class buttonHandler implements ActionListener {
         @Override
-        // todo
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             try {
@@ -91,7 +90,7 @@ public class ManageEmployee extends JFrame {
                         throw new FormattingException("Invalid Entry");
                     area.setText("");
                     manager.manageEmployeeWage(Integer.parseInt(id), Integer.parseInt(wage));
-                    manager.showAllEmployees();
+                    manager.displayAllEmployees();
                 }
             } catch (FormattingException f) {
                 NotificationUI ui = new NotificationUI(f.getMessage());

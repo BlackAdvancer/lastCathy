@@ -73,10 +73,9 @@ class BranchUI extends JFrame{
             Object source = e.getSource();
             if (source == customer) {
 //                System.out.print("hi customer");
-                MemberUI memberUI = new MemberUI();
-                memberUI.setVisible(true);
+                MemberUI customerUI = new MemberUI();
+                customerUI.setVisible(true);
             } else if (source == employee) {
-                System.out.print("hi employee");
 //                EmployeeUI employeeUI = new EmployeeUI(new Employee());
                   EmployeeUI employeeUI = new EmployeeUI();
 //                employeeUI.setVisible(true);

@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.PrintStream;
 
 @SuppressWarnings("Serial")
@@ -53,7 +51,7 @@ public class ManageDeal extends JFrame {
         PrintStream out = new PrintStream(new TextAreaOutputStream(area));
         System.setOut(out);
         System.setErr(out);
-        manager.showAllDeals();
+        manager.displayAllDeal();
     }
 
     AddDeleteModifyDeal addDeleteDealFrame;
@@ -122,36 +120,11 @@ public class ManageDeal extends JFrame {
 
 
         JTextField tf_dealName, tf_startTime, tf_endTime;
-        boolean startModified, endModified;
         private void drawFieldPanel() {
             fieldPanel = new JPanel(new GridLayout(3, 1));
             tf_dealName = new JTextField();
-            tf_startTime = new JTextField("yr-mo-da");
-            tf_startTime.setForeground(Color.GRAY);
-            startModified = false;
-            tf_startTime.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (startModified)
-                        return;
-                    tf_startTime.setText("");
-                    tf_startTime.setForeground(Color.BLACK);
-                    startModified = true;
-                }
-            });
-            tf_endTime = new JTextField("yr-mo-da");
-            tf_endTime.setForeground(Color.GRAY);
-            endModified = false;
-            tf_endTime.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (endModified)
-                        return;
-                    tf_endTime.setText("");
-                    tf_endTime.setForeground(Color.BLACK);
-                    endModified = true;
-                }
-            });
+            tf_startTime = new MyTextField("yr-mo-da");
+            tf_endTime = new MyTextField("yr-mo-da");
             fieldPanel.add(tf_dealName);
             fieldPanel.add(tf_startTime);
             fieldPanel.add(tf_endTime);
@@ -165,15 +138,19 @@ public class ManageDeal extends JFrame {
                 String start = tf_startTime.getText();
                 String end = tf_endTime.getText();
                 try {
-                    if (!Constraints.ifCorrectDateFormat(start) || !Constraints.ifCorrectDateFormat(end))
-                        throw new FormattingException("invalid time entry");
                     if (source == add) {
+                        if (!Constraints.ifCorrectDateFormat(start) || !Constraints.ifCorrectDateFormat(end))
+                            throw new FormattingException("invalid time entry");
                         manager.addNewDeal(name, start, end);
                     } else if (source == delete) {
                         manager.deleteDeal(name);
                     } else if (source == modify) {
+                        if (!Constraints.ifCorrectDateFormat(start) || !Constraints.ifCorrectDateFormat(end))
+                            throw new FormattingException("invalid time entry");
                         manager.modifyDealDuration(name, start, end);
                     }
+                    area.setText("");
+                    manager.displayAllDeal();
                     NotificationUI success = new NotificationUI("Success", "", "complete");
                     success.setVisible(true);
                 } catch (FormattingException f) {
@@ -257,9 +234,11 @@ public class ManageDeal extends JFrame {
                     } else if (source == delete) {
                         manager.deleteItemFromDeal(itemId, dealName);
                     } else if (source == modify) {
-                        manager.modifyDealPercent(dealName, itemId, discount);
+                        manager.modifyDealPercent(itemId, dealName, discount);
                     }
-                    NotificationUI success = new NotificationUI("Success", "", "complete");
+                    area.setText("");
+                    manager.displayAllDeal();
+                    NotificationUI success = new NotificationUI("Success!", "", "complete");
                     success.setVisible(true);
                 } catch (FormattingException f) {
                     NotificationUI error = new NotificationUI(f.getMessage());

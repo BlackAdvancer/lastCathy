@@ -7,13 +7,10 @@ import java.sql.Statement;
 
 public class Member extends controller {
     int memID;
-
     public Member() {
         connect("ora_a1q1b", "a24581167");
     }
-
-    public boolean validateID(int input) {
-        boolean correct = false;
+    public void validateID(int input) throws FormattingException {
         ResultSet rs;
         PreparedStatement ps;
         try {
@@ -22,13 +19,15 @@ public class Member extends controller {
             rs = ps.executeQuery();
             if (rs.next()) {
                 memID = input;
-                correct = true;
+                ps.close();
+                return;
             }
             ps.close();
+            throw new FormattingException("invalid member id");
         }catch(SQLException e){
-            System.out.println(e.getMessage());
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
         }
-        return correct;
     }
 
     public int checkPoint() {
@@ -40,12 +39,10 @@ public class Member extends controller {
             result = statement.executeQuery("SELECT * FROM Membership WHERE memberID = " + memID);
             result.next();
             result.getInt("memberID");
-            // name = result.getString("name");
             points = result.getInt("points");
-            return points;
         } catch (SQLException e){
-            System.out.println("Message: " + e.getMessage());
-            System.exit(-1);
+            NotificationUI error = new NotificationUI(e.getMessage());
+            error.setVisible(true);
         }
         return points;
     }
