@@ -157,7 +157,7 @@ class ManagerUI extends JFrame {
                     minMaxPrice = null;
                 }
             }else if (source == division) {
-                // todo
+                
             } else if (source == logOut) {
                 logOut();
             }
