@@ -455,36 +455,39 @@ public class Manager extends controller {
         }
     }
 
-    private void findPurchasesContainsAllItemsOnSale() throws SQLException {
+    public void findPurchasesContainsAllItemsOnSale() {
         int receiptNumber;
         Statement stmt;
         ResultSet rs;
-        stmt = con.createStatement();
-        rs = stmt.executeQuery("select distinct ip.receiptNumber from ItemsInPurchase ip where not exists (select iind.itemID from ItemsInDeal iind Minus select iinp.itemID from ItemsInPurchase iinp where iinp.receiptNumber = ip.receiptNumber)");
-        ResultSetMetaData rsmd = rs.getMetaData();
-        // get number of columns
-        int numCols = rsmd.getColumnCount();
-        // if (!rs.next()) {
-        //     System.out.println("no such purchase found! ");
-        System.out.println(" ");
-        // display column names;
-        for (int i = 0; i < numCols; i++)
-        {
-            // get column name and print it
-            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("select distinct ip.receiptNumber from ItemsInPurchase ip where not exists (select iind.itemID from ItemsInDeal iind Minus select iinp.itemID from ItemsInPurchase iinp where iinp.receiptNumber = ip.receiptNumber)");
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // get number of columns
+            int numCols = rsmd.getColumnCount();
+            // if (!rs.next()) {
+            //     System.out.println("no such purchase found! ");
+            System.out.println(" ");
+            // display column names;
+            for (int i = 0; i < numCols; i++) {
+                // get column name and print it
+                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+            }
+            System.out.println(" ");
+            while (rs.next()) {
+                // for display purposes get everything from Oracle
+                // as a string
+                // simplified output formatting; truncation may occur
+                receiptNumber = rs.getInt("receiptNumber");
+                System.out.printf("%-10.10s\n", receiptNumber);
+            }
+            // close the statement;
+            // the ResultSet will also be closed
+            stmt.close();
+        }catch (SQLException e){
+            NotificationUI ui = new NotificationUI(e.getMessage());
+            ui.setVisible(true);
         }
-        System.out.println(" ");
-        while(rs.next())
-        {
-            // for display purposes get everything from Oracle
-            // as a string
-            // simplified output formatting; truncation may occur
-            receiptNumber = rs.getInt("receiptNumber");
-            System.out.printf("%-10.10s\n", receiptNumber);
-        }
-        // close the statement;
-        // the ResultSet will also be closed
-        stmt.close();
     }
 
     public void getMaxWageFromAllBranches(){
