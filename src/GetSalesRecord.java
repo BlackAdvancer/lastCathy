@@ -60,6 +60,7 @@ public class GetSalesRecord extends JFrame {
         fields.add(tf_end);
         inputPanel.add(fields);
         button = new JButton("Done");
+        inputPanel.add(button, BorderLayout.EAST);
         button.addActionListener(handler);
     }
 

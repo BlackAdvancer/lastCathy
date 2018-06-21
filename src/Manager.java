@@ -405,48 +405,46 @@ public class Manager extends controller {
         int branchNumber;
         int[] timeStart = parseTimestamp(start);
         int[] timeEnd = parseTimestamp(end);
-        java.sql.Timestamp startDate = new java.sql.Timestamp(timeStart[0], timeStart[1], timeStart[2], 0, 0, 0, 0);
+        java.sql.Timestamp startDate = new java.sql.Timestamp(timeStart[0], timeStart[1] , timeStart[2], 0, 0, 0, 0);
         java.sql.Timestamp endDate = new java.sql.Timestamp(timeEnd[0], timeEnd[1], timeEnd[2], 0, 0, 0, 0);
         try {
             PreparedStatement ps;
             ResultSet rs;
 
             ps = con.prepareStatement("SELECT * FROM Purchase WHERE purchaseTime >= ? AND purchaseTime <= ? AND branchNumber = ?");
-            ps.setTimestamp(1, endDate);
-            ps.setTimestamp(2, startDate);
+            ps.setTimestamp(2, endDate);
+            ps.setTimestamp(1, startDate);
 
             ps.setInt(3, branch);
 
             rs = ps.executeQuery();
             // get info on ResultSet
-            ResultSetMetaData rsmd = rs.getMetaData();
-            // get number of columns
-            int numCols = rsmd.getColumnCount();
 
             System.out.println(" ");
 
             // display column names;
-            for (int i = 0; i < numCols; i++) {
-                // get column name and print it
-                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
-            }
+            System.out.printf("%-14s", "R.ID" );
+            System.out.printf("%-30s","purchaseTime");
+            System.out.printf("%-14s", "totalPrice");
+            System.out.printf("%-13s", "clerkID");
+            System.out.printf("%-10s", "branchNumber");
 
             System.out.println(" ");
             while (rs.next()) {
                 receiptNumber = rs.getInt("receiptNumber");
-                System.out.printf("%-10.10s", receiptNumber);
+                System.out.printf("%-13.13s", receiptNumber);
 
                 purchaseTime = rs.getTimestamp("purchaseTime");
-                System.out.printf("%-20.20s", purchaseTime);
+                System.out.printf("%-25.25s", purchaseTime);
 
                 totalPrice = rs.getDouble("totalPrice");
-                System.out.printf("%-15.15s", totalPrice);
+                System.out.printf("%-16.10s", totalPrice);
 
                 clerkID = rs.getInt("clerkID");
-                System.out.printf("%-15.15s", clerkID);
+                System.out.printf("%-15.7s", clerkID);
 
                 branchNumber = rs.getInt("branchNumber");
-                System.out.printf("%-15.15s\n", branchNumber);
+                System.out.printf("%-10.10s\n", branchNumber);
 
                 // close the statement;
                 // the ResultSet will also be closed
