@@ -325,7 +325,7 @@ public class Manager extends controller {
 
     public void modifyDealPercent(int itemId, String name, double percentage) throws FormattingException {
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'" + name + "\'");
+            PreparedStatement ps = con.prepareStatement("UPDATE ITEMSINDEAL SET percentage = ? WHERE itemID = ? AND dealName = \'" + name + "\'");
             ps.setDouble(1, percentage);
             ps.setInt(2, itemId);
             ps.executeUpdate();
@@ -492,5 +492,61 @@ public class Manager extends controller {
             ui.setVisible(true);
         }
     }
+
+    private void findPurchasesContainsAllItemsOnSale() throws SQLException {
+        int receiptNumber;
+        Statement stmt;
+        ResultSet rs;
+        stmt = con.createStatement();
+        rs = stmt.executeQuery("select distinct ip.receiptNumber from ItemsInPurchase ip where not exists (select iind.itemID from ItemsInDeal iind Minus select iinp.itemID from ItemsInPurchase iinp where iinp.receiptNumber = ip.receiptNumber)");
+        ResultSetMetaData rsmd = rs.getMetaData();
+        // get number of columns
+        int numCols = rsmd.getColumnCount();
+        // if (!rs.next()) {
+        //     System.out.println("no such purchase found! ");
+        System.out.println(" ");
+        // display column names;
+        for (int i = 0; i < numCols; i++)
+        {
+            // get column name and print it
+            System.out.printf("%-15s", rsmd.getColumnName(i+1));
+        }
+        System.out.println(" ");
+        while(rs.next())
+        {
+            // for display purposes get everything from Oracle
+            // as a string
+            // simplified output formatting; truncation may occur
+            receiptNumber = rs.getInt("receiptNumber");
+            System.out.printf("%-10.10s\n", receiptNumber);
+        }
+        // close the statement;
+        // the ResultSet will also be closed
+        stmt.close();
+    }
+
+    public void getMaxAvgItemPrice() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            rs = stmt.executeQuery("SELECT MAX(price) FROM (SELECT AVG(price) AS price FROM Item I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
+            System.out.println("Max avg price:"+ rs.getDouble("MAX(price)"));
+        } catch (SQLException s) {
+
+        }
+
+    }
+    public void getMinAvgItemPrice() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            rs = stmt.executeQuery("SELECT MIN(price) FROM (SELECT AVG(price) AS PRICE FROM ITEM I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
+            System.out.println("Min avg price: "+rs.getDouble("MIN(price)"));
+        } catch (SQLException se){
+
+        }
+
+    }
+
 
 }
