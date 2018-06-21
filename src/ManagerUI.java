@@ -162,6 +162,7 @@ class ManagerUI extends JFrame {
                     minMaxPrice.dispose();
                     minMaxPrice = null;
                 }
+
             } else if (source == division) {
                 if (Division == null)
                     findPurchasesContainsAllItemsOnSale();
