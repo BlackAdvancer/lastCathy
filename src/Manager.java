@@ -487,6 +487,80 @@ public class Manager extends controller {
         stmt.close();
     }
 
+    public void getMaxWageFromAllBranches(){
+        int wage;
+        int branch;
+        int clerkID;
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT MAX(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // get number of columns
+            int numCols = rsmd.getColumnCount();
+            System.out.println(" ");
+            // display column names;
+            for (int i = 0; i < numCols; i++) {
+                // get column name and print it
+                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+            }
+            System.out.println(" ");
+            while (rs.next()) {
+                // simplified output formatting; truncation may occur
+                wage = rs.getInt("MAX(wage)");
+                System.out.printf("%-5s", wage);
+                clerkID = rs.getInt("clerkID");
+                System.out.printf("%-5s", clerkID);
+                branch = rs.getInt("branchNumber");
+                System.out.printf("%-5s\n", branch);
+            }
+            // close the statement;
+            // the ResultSet will also be closed
+            stmt.close();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
+    }
+
+    public void getMinWageFromAllBranches(){
+        int wage;
+        int branch;
+        int clerkID;
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // get number of columns
+            int numCols = rsmd.getColumnCount();
+            System.out.println(" ");
+            // display column names;
+            for (int i = 0; i < numCols; i++) {
+                // get column name and print it
+                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
+            }
+            System.out.println(" ");
+            while (rs.next()) {
+                // simplified output formatting; truncation may occur
+                wage = rs.getInt("MIN(wage)");
+                System.out.printf("%-5s", wage);
+                clerkID = rs.getInt("clerkID");
+                System.out.printf("%-5s", clerkID);
+                branch = rs.getInt("branchNumber");
+                System.out.printf("%-5s\n", branch);
+            }
+            // close the statement;
+            // the ResultSet will also be closed
+            stmt.close();
+        } catch (SQLException s) {
+            NotificationUI error = new NotificationUI(s.getMessage());
+            error.setVisible(true);
+        }
+    }
+
     public void getMaxAvgItemPrice() {
         try {
             Statement stmt = con.createStatement();

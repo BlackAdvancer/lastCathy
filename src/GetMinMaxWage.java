@@ -56,9 +56,9 @@ public class GetMinMaxWage extends JFrame {
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if (source == max) {
-                // todo
+                manager.getMaxWageFromAllBranches();
             } else if (source == min) {
-                // TODO: 2018-06-20
+                manager.getMinWageFromAllBranches();
             }
         }
     }
