@@ -325,7 +325,7 @@ public class Manager extends controller {
 
     public void modifyDealPercent(int itemId, String name, double percentage) throws FormattingException {
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE Deal SET percentage = ? WHERE itemID = ? AND dealName = \'" + name + "\'");
+            PreparedStatement ps = con.prepareStatement("UPDATE ITEMSINDEAL SET percentage = ? WHERE itemID = ? AND dealName = \'" + name + "\'");
             ps.setDouble(1, percentage);
             ps.setInt(2, itemId);
             ps.executeUpdate();
