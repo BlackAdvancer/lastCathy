@@ -57,9 +57,11 @@ public class GetMinMaxPrice extends JFrame {
             Object source = e.getSource();
             if (source == max) {
                 // todo
+                area.setText("");
                 manager.getMaxAvgItemPrice();
             } else if (source == min) {
                 // todo
+                area.setText("");
                 manager.getMinAvgItemPrice();
             }
         }

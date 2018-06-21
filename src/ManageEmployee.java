@@ -95,9 +95,6 @@ public class ManageEmployee extends JFrame {
             } catch (FormattingException f) {
                 NotificationUI ui = new NotificationUI(f.getMessage());
                 ui.setVisible(true);
-            } catch (IOException i) {
-                NotificationUI ui = new NotificationUI(i.getMessage());
-                ui.setVisible(true);
             } catch (SQLException s) {
                 NotificationUI ui = new NotificationUI(s.getMessage());
                 ui.setVisible(true);

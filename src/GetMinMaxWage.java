@@ -56,8 +56,10 @@ public class GetMinMaxWage extends JFrame {
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if (source == max) {
+                area.setText("");
                 manager.getMaxWageFromAllBranches();
             } else if (source == min) {
+                area.setText("");
                 manager.getMinWageFromAllBranches();
             }
         }

@@ -61,7 +61,7 @@ class ManagerUI extends JFrame {
         getTotalTransactionAmount.addActionListener(handler);
         getMinMaxWage = new JButton("Get Min Max Wage Clerk");
         getMinMaxWage.addActionListener(handler);
-        getMinMaxPrice = new JButton("Get Maximum Average Item Price");
+        getMinMaxPrice = new JButton("Get Average Item Price");
         getMinMaxPrice.addActionListener(handler);
         division = new JButton("Find special Purchase");
         division.addActionListener(handler);

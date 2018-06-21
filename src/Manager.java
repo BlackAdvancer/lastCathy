@@ -502,7 +502,6 @@ public class Manager extends controller {
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
             int numCols = rsmd.getColumnCount();
-            System.out.println(" ");
             // display column names;
             for (int i = 0; i < numCols; i++) {
                 // get column name and print it
@@ -512,7 +511,7 @@ public class Manager extends controller {
             while (rs.next()) {
                 // simplified output formatting; truncation may occur
                 wage = rs.getInt("MAX(wage)");
-                System.out.printf("%-5s", wage);
+                System.out.printf("%-25s", wage);
 //                clerkID = rs.getInt("clerkID");
 //                System.out.printf("%-5s", clerkID);
                 branch = rs.getInt("branchNumber");
@@ -539,7 +538,6 @@ public class Manager extends controller {
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
             int numCols = rsmd.getColumnCount();
-            System.out.println(" ");
             // display column names;
             for (int i = 0; i < numCols; i++) {
                 // get column name and print it
@@ -549,7 +547,7 @@ public class Manager extends controller {
             while (rs.next()) {
                 // simplified output formatting; truncation may occur
                 wage = rs.getInt("MIN(wage)");
-                System.out.printf("%-5s", wage);
+                System.out.printf("%-25s", wage);
 //                clerkID = rs.getInt("clerkID");
 //                System.out.printf("%-5s", clerkID);
                 branch = rs.getInt("branchNumber");
