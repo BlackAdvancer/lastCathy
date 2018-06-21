@@ -360,42 +360,6 @@ public class Manager extends controller {
         return array;
     }
 
-    public void getMinWageFromAllBranches(){
-        int wage;
-        int branch;
-        int clerkID;
-        Statement stmt;
-        ResultSet rs;
-        try {
-            stmt = con.createStatement();
-            rs = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
-            ResultSetMetaData rsmd = rs.getMetaData();
-            // get number of columns
-            int numCols = rsmd.getColumnCount();
-            System.out.println(" ");
-            // display column names;
-            for (int i = 0; i < numCols; i++) {
-                // get column name and print it
-                System.out.printf("%-15s", rsmd.getColumnName(i + 1));
-            }
-            System.out.println(" ");
-            while (rs.next()) {
-                // simplified output formatting; truncation may occur
-                wage = rs.getInt("MIN(wage)");
-                System.out.printf("%-5s", wage);
-                clerkID = rs.getInt("clerkID");
-                System.out.printf("%-5s", clerkID);
-                branch = rs.getInt("branchNumber");
-                System.out.printf("%-5s\n", branch);
-            }
-            // close the statement;
-            // the ResultSet will also be closed
-            stmt.close();
-        } catch (SQLException s) {
-            NotificationUI error = new NotificationUI(s.getMessage());
-            error.setVisible(true);
-        }
-    }
 
     public void getSalesRecord(String start, String end) {
         int receiptNumber;
@@ -527,10 +491,12 @@ public class Manager extends controller {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs;
-            rs = stmt.executeQuery("SELECT MAX(price) FROM (SELECT AVG(price) AS price FROM Item I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
-            System.out.println("Max avg price:"+ rs.getDouble("MAX(price)"));
+            rs = stmt.executeQuery("SELECT MAX(price) as Max_price FROM (SELECT AVG(price) AS price FROM Item I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber)");
+            rs.next();
+            double max_price = rs.getDouble("Max_price");
+            System.out.println("Max avg price: "+ max_price);
         } catch (SQLException s) {
-
+            System.out.println("SQL exception MAx avg");
         }
 
     }
@@ -538,10 +504,11 @@ public class Manager extends controller {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs;
-            rs = stmt.executeQuery("SELECT MIN(price) FROM (SELECT AVG(price) AS PRICE FROM ITEM I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
-            System.out.println("Min avg price: "+rs.getDouble("MIN(price)"));
+            rs = stmt.executeQuery("SELECT MIN(price) as MIN_price FROM (SELECT AVG(price) AS PRICE FROM ITEM I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber)");
+            rs.next();
+            System.out.println("Min avg price: "+rs.getDouble("Min_price"));
         } catch (SQLException se){
-
+            System.out.println("SQl exception Min avg");
         }
 
     }

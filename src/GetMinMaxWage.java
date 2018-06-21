@@ -38,7 +38,6 @@ public class GetMinMaxWage extends JFrame {
         PrintStream out = new PrintStream(new TextAreaOutputStream(area));
         System.setOut(out);
         System.setErr(out);
-        manager.getMinWageFromAllBranches();
     }
 
     private JButton min, max;
