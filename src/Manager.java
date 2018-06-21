@@ -495,7 +495,7 @@ public class Manager extends controller {
         ResultSet rs;
         try {
             stmt = con.createStatement();
-            rs = stmt.executeQuery("SELECT MAX(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+            rs = stmt.executeQuery("SELECT MAX(wage), branchNumber FROM Clerk GROUP BY branchNumber");
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
             int numCols = rsmd.getColumnCount();
@@ -510,8 +510,8 @@ public class Manager extends controller {
                 // simplified output formatting; truncation may occur
                 wage = rs.getInt("MAX(wage)");
                 System.out.printf("%-5s", wage);
-                clerkID = rs.getInt("clerkID");
-                System.out.printf("%-5s", clerkID);
+//                clerkID = rs.getInt("clerkID");
+//                System.out.printf("%-5s", clerkID);
                 branch = rs.getInt("branchNumber");
                 System.out.printf("%-5s\n", branch);
             }
@@ -532,7 +532,7 @@ public class Manager extends controller {
         ResultSet rs;
         try {
             stmt = con.createStatement();
-            rs = stmt.executeQuery("SELECT MIN(wage), clerkID, branchNumber FROM Clerk GROUP BY branchNumber, clerkID");
+            rs = stmt.executeQuery("SELECT MIN(wage), branchNumber FROM Clerk GROUP BY branchNumber");
             ResultSetMetaData rsmd = rs.getMetaData();
             // get number of columns
             int numCols = rsmd.getColumnCount();
@@ -547,8 +547,8 @@ public class Manager extends controller {
                 // simplified output formatting; truncation may occur
                 wage = rs.getInt("MIN(wage)");
                 System.out.printf("%-5s", wage);
-                clerkID = rs.getInt("clerkID");
-                System.out.printf("%-5s", clerkID);
+//                clerkID = rs.getInt("clerkID");
+//                System.out.printf("%-5s", clerkID);
                 branch = rs.getInt("branchNumber");
                 System.out.printf("%-5s\n", branch);
             }
