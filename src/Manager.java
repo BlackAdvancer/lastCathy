@@ -355,7 +355,7 @@ public class Manager extends controller {
         // xx-xx-xx
         int[] array = new int[3];
         array[0] = Integer.parseInt(time.substring(0,2))+2000-1900;
-        array[1] = Integer.parseInt(time.substring(3, 5));
+        array[1] = Integer.parseInt(time.substring(3, 5))-1;
         array[2] = Integer.parseInt(time.substring(6, 8));
         return array;
     }
@@ -547,6 +547,5 @@ public class Manager extends controller {
         }
 
     }
-
 
 }
