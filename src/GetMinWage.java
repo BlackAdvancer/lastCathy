@@ -31,6 +31,6 @@ public class GetMinWage extends JFrame {
         PrintStream out = new PrintStream(new TextAreaOutputStream(area));
         System.setOut(out);
         System.setErr(out);
-        manager.getMinWageFromAllBranches();
+        manager.getMinAvgItemPrice();
     }
 }

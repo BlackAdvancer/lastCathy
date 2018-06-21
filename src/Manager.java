@@ -525,4 +525,28 @@ public class Manager extends controller {
         stmt.close();
     }
 
+    public void getMaxAvgItemPrice() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            rs = stmt.executeQuery("SELECT MAX(price) FROM (SELECT AVG(price) AS price FROM Item I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
+            System.out.println("Max avg price:"+ rs.getDouble("MAX(price)"));
+        } catch (SQLException s) {
+
+        }
+
+    }
+    public void getMinAvgItemPrice() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+            rs = stmt.executeQuery("SELECT MIN(price) FROM (SELECT AVG(price) AS PRICE FROM ITEM I, Storage S WHERE I.itemID = S.itemID GROUP BY branchNumber");
+            System.out.println("Min avg price: "+rs.getDouble("MIN(price)"));
+        } catch (SQLException se){
+
+        }
+
+    }
+
+
 }
