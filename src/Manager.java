@@ -444,7 +444,7 @@ public class Manager extends controller {
             System.out.println(" ");
             while (rs.next()) {
                 totalPrice = rs.getDouble("SUM");
-                System.out.printf("%-10s", totalPrice);
+                System.out.printf("%-15s", totalPrice);
                 count = rs.getInt("CON");
                 System.out.printf("%-5s", count);
             }
