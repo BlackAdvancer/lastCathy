@@ -90,7 +90,7 @@ grant select on Offer to public;
 CREATE TABLE Purchase (
 	receiptNumber INTEGER PRIMARY KEY,
 	purchaseTime TIMESTAMP,
-	totalPrice NUMBER(5, 2) NOT NULL,
+	totalPrice NUMBER(5, 2) NOT NULL check (totalPrice >= 0),
 	clerkID INTEGER NOT NULL,
 	branchNumber INTEGER NOT NULL,
 	FOREIGN KEY (clerkID) REFERENCES Clerk,
